@@ -23,8 +23,9 @@ class PowerOf10 {
 
     private static final int indexOf0InPowersOf10 = 323;
 
-    public static double lookup(int power) {
-        return powersOf10[power + indexOf0InPowersOf10];
+    public static double lookup(long power) {
+        // If power is too big to be an int, something has gone horribly wrong anyways.
+        return powersOf10[(int)power + indexOf0InPowersOf10];
     }
 
     public static void main(String[] args) {
