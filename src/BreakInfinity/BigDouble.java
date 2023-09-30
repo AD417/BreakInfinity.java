@@ -3,7 +3,9 @@ package BreakInfinity;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BigDouble {
+import java.util.Objects;
+
+public class BigDouble implements Comparable<BigDouble> {
     private final double mantissa;
     private final long exponent;
 
@@ -297,6 +299,98 @@ public class BigDouble {
         return recip();
     }
 
+    @Override
+    public int compareTo(@NotNull BigDouble other) {
+        if (isNaN(this)) {
+            if (isNaN(other)) return 0;
+            return -1;
+        }
+        if (isNaN(other)) return 1;
+
+        if (this.mantissa == 0) {
+            if (other.mantissa == 0) return 0;
+            if (other.mantissa < 0) return 1;
+            return -1;
+        }
+        if (other.mantissa == 0) {
+            if (this.mantissa < 0) return -1;
+            return 1;
+        }
+
+        if (this.mantissa > 0) {
+            if (other.mantissa < 0) return 1;
+            if (this.exponent > other.exponent) return 1;
+            if (this.exponent < other.exponent) return -1;
+            return Double.compare(this.mantissa, other.mantissa);
+        }
+
+        if (other.mantissa > 0) return -1;
+        if (this.exponent > other.exponent) return -1;
+        if (this.exponent < other.exponent) return -1;
+        return Double.compare(this.mantissa, other.mantissa);
+    }
+    public int cmp(BigDouble other) {
+        return compareTo(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mantissa, exponent);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (obj.getClass() != BigDouble.class) return false;
+        return equals((BigDouble) obj);
+    }
+    public boolean equals(BigDouble other) {
+        return this.exponent == other.exponent && this.mantissa == other.mantissa;
+    }
+    public boolean eq(BigDouble other) {
+        return equals(other);
+    }
+
+    public boolean neq(BigDouble other) {
+        return !equals(other);
+    }
+    public boolean notEquals(BigDouble other) {
+        return !equals(other);
+    }
+
+    // NOTE: maybe I could get away with the extant CompareTo method doing the work for me.
+    public boolean lt(BigDouble other) {
+        return compareTo(other) < 0;
+    }
+    public boolean lessThan(BigDouble other) {
+        return lt(other);
+    }
+
+    public boolean lte(BigDouble other) {
+        return compareTo(other) <= 0;
+    }
+    public boolean lessThanOrEqualTo(BigDouble other) {
+        return lte(other);
+    }
+
+    public boolean gt(BigDouble other) {
+        return compareTo(other) > 0;
+    }
+    public boolean greaterThan(BigDouble other) {
+        return gt(other);
+    }
+
+    public boolean gte(BigDouble other) {
+        return compareTo(other) >= 0;
+    }
+    public boolean greaterThanOrEqualTo(BigDouble other) {
+        return gte(other);
+    }
+
+
+
+
 
 
 
@@ -350,24 +444,17 @@ public class BigDouble {
     private static class PrivateConstructorArg { }
 
     public static void main(String[] args) {
-        BigDouble x = BigDouble.parseBigDouble("987").mul(BigDouble.parseBigDouble("1e1000"));
-        BigDouble y = new BigDouble(113).mul(BigDouble.parseBigDouble("1e1000"));
-        BigDouble z = x.add(y);
-        System.out.println("ADD");
-        System.out.printf("%fe%d%n", z.mantissa, z.exponent);
-        System.out.println(z.toDouble());
-        z = x.sub(y);
-        System.out.println("SUB");
-        System.out.printf("%fe%d%n", z.mantissa, z.exponent);
-        System.out.println(z.toDouble());
-        z = x.mul(y);
-        System.out.println("MUL");
-        System.out.printf("%fe%d%n", z.mantissa, z.exponent);
-        System.out.println(z.toDouble());
-        z = x.div(y);
-        System.out.println("DIV");
-        System.out.printf("%fe%d%n", z.mantissa, z.exponent);
-        System.out.println(z.toDouble());
+        BigDouble x = BigDouble.parseBigDouble("7");
+        BigDouble y = new BigDouble(7);
+        System.out.println(x.gt(y));
+        System.out.println(x.gte(y));
+        System.out.println(x.lt(y));
+        System.out.println(x.lte(y));
+        x = x.sub(new BigDouble(1));
+        System.out.println(x.gt(y));
+        System.out.println(x.gte(y));
+        System.out.println(x.lt(y));
+        System.out.println(x.lte(y));
     }
 
 }
