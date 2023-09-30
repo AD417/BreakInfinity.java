@@ -1,10 +1,11 @@
 package BreakInfinity;
 
-
+import java.text.DecimalFormat;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+@SuppressWarnings("unused" )
 public class BigDouble implements Comparable<BigDouble> {
     private final double mantissa;
     private final long exponent;
@@ -494,7 +495,7 @@ public class BigDouble implements Comparable<BigDouble> {
     }
     public static BigDouble pow10(double value) {
         long valueAsLong = (long) value;
-        // UN-SAFETY: if value is larger than a long, then the program is gonna break anyways.
+        // UN-SAFETY: if value is larger than a long, then the program will break anyway.
         double residual = value - valueAsLong;
         if (residual < Constants.ROUND_TOLERANCE) {
             return fromMantissaExponentNoNormalize(1, valueAsLong);
@@ -542,7 +543,7 @@ public class BigDouble implements Comparable<BigDouble> {
         newMantissa = Math.pow(10, other * Math.log10(mantissa) + residue);
         if (Double.isFinite(newMantissa))
         {
-            return normalize(newMantissa, (long) newExponent);
+            return normalize(newMantissa, newExponent);
         }
 
         //UN-SAFETY: This should return NaN when mantissa is negative and value is noninteger.
@@ -567,7 +568,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public BigDouble sqrt() {
         if (mantissa < 0) return NaN;
-        if (e % 2 != 0) {
+        if (exponent % 2 != 0) {
             // Mod of a negative number is negative, so != could be +1 or -1.
             return normalize(
                     Math.sqrt(mantissa) * 3.16227766016838,
@@ -588,25 +589,71 @@ public class BigDouble implements Comparable<BigDouble> {
         int sign = mantissa > 0 ? 1 : -1;
         double newMantissa = Math.cbrt(mantissa);
 
-        switch ((int) (exponent % 3)) {
-            case 1:
-            case -2:
-                return normalize(
-                        newMantissa * 2.154434690031883,
-                        (long)Math.floor(exponent / 3.0)
-                );
-            case 2:
-            case -1:
-                return normalize(
-                        newMantissa * 4.641588833612778,
-                        (long)Math.floor(exponent / 3.0)
-                );
-            default: // 0
-                return normalize(newMantissa, exponent / 3);
-        }
+        return switch ((int) (exponent % 3)) {
+            case 1, -2 -> normalize(
+                    newMantissa * 2.154434690031883,
+                    (long) Math.floor(exponent / 3.0)
+            );
+            case 2, -1 -> normalize(
+                    newMantissa * 4.641588833612778,
+                    (long) Math.floor(exponent / 3.0)
+            );
+            default -> // 0
+                    normalize(newMantissa, exponent / 3);
+        };
     }
 
+    /**
+     * If you're willing to spend 'resourcesAvailable' and want to buy something
+     * with exponentially increasing cost each purchase (start at priceStart,
+     * multiply by priceRatio, already own currentOwned), how much of it can you buy?
+     * Adapted from Trimps source code.
+     */
+    public static BigDouble affordGeometricSeries(
+            // Thanks, I hate that this has 4
+            BigDouble resourcesAvailable,
+            BigDouble priceStart,
+            BigDouble priceRatio,
+            long currentOwned
+    ) {
+        return ZERO;
+        // TODO: Figure out where this actually gets implemented.
+        //  Same with all the other things immediately below this at line 1320 in BI.ts
+    }
 
+    //...
+
+    public static BigDouble randomDecimalForTesting(long absMaxExponent) {
+        // NOTE: This doesn't follow any kind of sane random distribution, so use this for testing purposes only.
+        // 5% of the time, have a mantissa of 0
+        if (Math.random() * 20 < 1) {
+            return fromMantissaExponentNoNormalize(0, 0);
+        }
+        double mantissa = Math.random() * 10;
+        // 10% of the time, have a simple mantissa
+        if (Math.random() * 10 < 1) {
+            mantissa = Math.round(mantissa);
+        }
+        mantissa *= Math.signum(Math.random() * 2 - 1);
+        long exponent = (long) Math.floor(Math.random() * absMaxExponent * 2) - absMaxExponent;
+        return normalize(mantissa, exponent);
+
+        /*
+          Examples:
+          randomly test pow:
+          var a = Decimal.randomDecimalForTesting(1000);
+          var pow = Math.random()*20-10;
+          if (Math.random()*2 < 1) { pow = Math.round(pow); }
+          var result = Decimal.pow(a, pow);
+          ["(" + a.toString() + ")^" + pow.toString(), result.toString()]
+          randomly test add:
+          var a = Decimal.randomDecimalForTesting(1000);
+          var b = Decimal.randomDecimalForTesting(17);
+          var c = a.mul(b);
+          var result = a.add(c);
+          [a.toString() + "+" + c.toString(), result.toString()]
+        */
+    }
 
     public double toDouble() {
         // Problem: in JS, new Decimal(116).toNumber() returns 115.99999999999999.
@@ -653,17 +700,87 @@ public class BigDouble implements Comparable<BigDouble> {
         return result;
     }
 
+    public double mantissaWithDecimalPlaces(int places) {
+        if (isInfinite(this)) {
+            return mantissa;
+        }
+
+        if (mantissa == 0) {
+            return 0;
+        }
+
+        // Create a DecimalFormat instance with the desired pattern
+        DecimalFormat df = new DecimalFormat("#." + "0".repeat(places));
+
+        // Use the format() method to round and format the double
+        String formattedValue = df.format(mantissa);
+        return Double.parseDouble(formattedValue);
+    }
+
     @Override
     public String toString() {
-        return String.format("%fe%d", mantissa, exponent);
+        if (isInfinite(this)) return Double.toString(mantissa);
+        if (exponent <= -Constants.EXP_LIMIT) return "0";
+
+        if (exponent < 21 && exponent > -7) {
+            return Double.toString(toDouble());
+        }
+        return mantissa + "e" + (exponent >= 0 ? "+" : "") + exponent;
     }
+
+    public String toExponential(int places) {
+        if (isInfinite(this)) return Double.toString(mantissa);
+
+        if (mantissa == 0 || exponent < -Constants.EXP_LIMIT) {
+            return "0" + RepeatZeroes.trailZeroes(places) + "e+0";
+        }
+
+        // One case: we have to do it all ourselves!
+        // Sorry, no toExponential in Double.
+
+        int len = places + 1;
+        int numDigits = (int) Math.max(1, Math.ceil(Math.log10(Math.abs(mantissa))));
+        double rounded = Math.round(mantissa * Math.pow(10, len - numDigits)) * Math.pow(10, numDigits - len);
+
+        // Create a DecimalFormat instance with the desired pattern
+        DecimalFormat df = new DecimalFormat("#." + "0".repeat((Math.max(len - numDigits, 0))));
+
+
+        return df.format(rounded) + "e" + (exponent >= 0 ? "+" : "") + exponent;
+    }
+
+    public String toFixed(int places) {
+        if (isInfinite(this)) return Double.toString(mantissa);
+        if (mantissa == 0 || exponent < -Constants.EXP_LIMIT) {
+            return "0" + RepeatZeroes.trailZeroes(places);
+        }
+
+        String mantissaStr = Double.toString(mantissa).replace(".", "");//, this.e + 1, "0");
+        String mantissaZeroes = RepeatZeroes.repeatZeroes(
+                (int)exponent - mantissaStr.length() + 1
+        );
+        return mantissa + mantissaZeroes + RepeatZeroes.trailZeroes(places);
+    }
+
+    public String toPrecision(int places) {
+        if (exponent <= -7) {
+            return toExponential(places - 1);
+        }
+        if (places > exponent) {
+            return this.toFixed(places - (int)exponent - 1);
+        }
+        return this.toExponential(places - 1);
+    }
+
 
     private static class PrivateConstructorArg { }
 
     public static void main(String[] args) {
-        BigDouble x = BigDouble.parseBigDouble("1e1000000");
-        BigDouble y = new BigDouble(1.031);
-        System.out.println(x.pow(y));
+        String x;
+        for (int i = 0; i < 100; i++) {
+            x = BigDouble.randomDecimalForTesting(1000).toPrecision(5);
+            System.out.println(x);
+        }
     }
 
 }
