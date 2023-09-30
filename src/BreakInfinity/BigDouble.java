@@ -97,6 +97,10 @@ public class BigDouble implements Comparable<BigDouble> {
         return Double.isInfinite(value.mantissa);
     }
 
+    public static boolean isFinite(BigDouble value) {
+        return !isInfinite(value);
+    }
+
     public static BigDouble parseBigDouble(String value) {
         if (value.indexOf('e') != -1) {
             var parts = value.split("e" );
@@ -121,15 +125,12 @@ public class BigDouble implements Comparable<BigDouble> {
     public double getMantissa() {
         return mantissa;
     }
-
     public long getExponent() {
         return exponent;
     }
-
     public double m() {
         return mantissa;
     }
-
     public double e() {
         return exponent;
     }
@@ -449,6 +450,162 @@ public class BigDouble implements Comparable<BigDouble> {
         return eq_tolerance(other, tolerance) || gt(other);
     }
 
+    public double log10() {
+        return exponent + Math.log10(mantissa);
+    }
+
+    public double absLog10() {
+        return exponent + Math.log10(Math.abs(mantissa));
+    }
+
+    public double pLog10() {
+        return mantissa <= 0 || exponent < 0 ? 0 : log10();
+    }
+
+    public double log() {
+        return 2.302585092994046 * log10();
+    }
+    public double logarithm() {
+        return log();
+    }
+
+    public double log(double base) {
+        // UN-SAFETY: Most incremental game cases are log(number := 1 or greater, base := 2 or greater).
+        // We assume this to be true and thus only need to return a number, not a Decimal,
+        // and don't do any other kind of error checking.
+
+        // Also, Math.LN10 = 2.302585092994046
+        return 2.302585092994046 / Math.log(base) * log10();
+    }
+    public double logarithm(double base) {
+        return log(base);
+    }
+
+    public double log2() {
+        return 3.321928094887362 * log10();
+    }
+
+    public double ln() {
+        return log();
+    }
+
+    public static BigDouble pow10(long value) {
+        return fromMantissaExponentNoNormalize(1, value);
+    }
+    public static BigDouble pow10(double value) {
+        long valueAsLong = (long) value;
+        // UN-SAFETY: if value is larger than a long, then the program is gonna break anyways.
+        double residual = value - valueAsLong;
+        if (residual < Constants.ROUND_TOLERANCE) {
+            return fromMantissaExponentNoNormalize(1, valueAsLong);
+        }
+        return normalize(Math.pow(10, residual), valueAsLong);
+    }
+    public static BigDouble pow10(BigDouble value) {
+        return pow10(value.toDouble());
+    }
+
+    public BigDouble pow(BigDouble power) {
+        // UN-SAFETY: if power > Double.MAX_VALUE,
+        // anything raised to it is either 0 or infinite.
+
+        return pow(power.toDouble());
+    }
+    public BigDouble pow(double power) {
+        boolean powerIsInteger = Math.abs(power % 1) < Double.MIN_VALUE;
+        if (power < 0 && !powerIsInteger) return NaN;
+
+        boolean is10 = exponent == 1 && mantissa - 1 < Double.MIN_VALUE;
+        return is10 ? pow10(power) : powInternal(power);
+    }
+    private BigDouble powInternal(double other) {
+        //UN-SAFETY: Accuracy not guaranteed beyond ~9~11 decimal places.
+
+        //TODO: Fast track seems about neutral for performance. It might become faster if an integer pow is implemented, or it might not be worth doing (see https://github.com/Patashu/break_infinity.js/issues/4 )
+
+        //Fast track: If (this.exponent*value) is an integer and mantissa^value fits in a Number, we can do a very fast method.
+        var temp = exponent * other;
+        double newMantissa;
+        if (Math.abs(temp % 1) < Double.MIN_VALUE && Double.isFinite(temp) && Math.abs(temp) < Constants.EXP_LIMIT)
+        {
+            newMantissa = Math.pow(mantissa, other);
+            if (Double.isFinite(newMantissa))
+            {
+                return normalize(newMantissa, (long) temp);
+            }
+        }
+
+        //Same speed and usually more accurate. (An arbitrary-precision version of this calculation is used in break_break_infinity.js, sacrificing performance for utter accuracy.)
+
+        var newExponent = (long) temp;
+        var residue = temp - newExponent;
+        newMantissa = Math.pow(10, other * Math.log10(mantissa) + residue);
+        if (Double.isFinite(newMantissa))
+        {
+            return normalize(newMantissa, (long) newExponent);
+        }
+
+        //UN-SAFETY: This should return NaN when mantissa is negative and value is noninteger.
+        var result = pow10(other * absLog10()); //this is 2x faster and gives same values AFAIK
+        if (signum() == -1 && other % 2 == 1)
+        {
+            return result.neg();
+        }
+
+        return result;
+    }
+
+    public BigDouble exp() {
+        double x = toDouble();
+        if (-706 < x && x < 709) return new BigDouble(Math.exp(x));
+        return pow(Math.E);
+    }
+
+    public BigDouble sqr() {
+        return normalize(mantissa * mantissa, exponent * 2);
+    }
+
+    public BigDouble sqrt() {
+        if (mantissa < 0) return NaN;
+        if (e % 2 != 0) {
+            // Mod of a negative number is negative, so != could be +1 or -1.
+            return normalize(
+                    Math.sqrt(mantissa) * 3.16227766016838,
+                    (exponent - 1) / 2
+            );
+        }
+        return normalize(Math.sqrt(mantissa), exponent / 2);
+    }
+
+    public BigDouble cube() {
+        return normalize(
+                mantissa * mantissa * mantissa,
+                exponent * 3
+        );
+    }
+
+    public BigDouble cbrt() {
+        int sign = mantissa > 0 ? 1 : -1;
+        double newMantissa = Math.cbrt(mantissa);
+
+        switch ((int) (exponent % 3)) {
+            case 1:
+            case -2:
+                return normalize(
+                        newMantissa * 2.154434690031883,
+                        (long)Math.floor(exponent / 3.0)
+                );
+            case 2:
+            case -1:
+                return normalize(
+                        newMantissa * 4.641588833612778,
+                        (long)Math.floor(exponent / 3.0)
+                );
+            default: // 0
+                return normalize(newMantissa, exponent / 3);
+        }
+    }
+
 
 
     public double toDouble() {
@@ -496,17 +653,17 @@ public class BigDouble implements Comparable<BigDouble> {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%fe%d", mantissa, exponent);
+    }
 
     private static class PrivateConstructorArg { }
 
     public static void main(String[] args) {
-        BigDouble x = BigDouble.parseBigDouble("7");
-        BigDouble y = BigDouble.parseBigDouble("7.0000001");
-        BigDouble tol = new BigDouble(0.0001);
-        System.out.println(x.toDouble());
-        System.out.println(y.toDouble());
-        System.out.println(x.equals(y));
-        System.out.println(x.eq_tolerance(y, tol));
+        BigDouble x = BigDouble.parseBigDouble("1e1000000");
+        BigDouble y = new BigDouble(1.031);
+        System.out.println(x.pow(y));
     }
 
 }
