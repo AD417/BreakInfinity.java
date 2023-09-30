@@ -388,10 +388,66 @@ public class BigDouble implements Comparable<BigDouble> {
         return gte(other);
     }
 
+    public BigDouble max(BigDouble other) {
+        return compareTo(other) > 0 ? this : other;
+    }
 
+    public BigDouble min(BigDouble other) {
+        return compareTo(other) < 0 ? this : other;
+    }
 
+    public BigDouble clamp(BigDouble lower, BigDouble higher) {
+        return max(lower).min(higher);
+    }
 
+    public BigDouble clampMin(BigDouble other) {
+        return max(other);
+    }
 
+    public BigDouble clampMax(BigDouble other) {
+        return min(other);
+    }
+
+    // It's operators like this one that make me realize how much of a pain it will be
+    // to properly overload everything later. 9 methods each.
+    public int cmp_tolerance(BigDouble other, BigDouble tolerance) {
+        return eq_tolerance(other, tolerance) ? 0 : cmp(other);
+    }
+    public int compare_tolerance(BigDouble other, BigDouble tolerance) {
+        return cmp_tolerance(other, tolerance);
+    }
+
+    public boolean eq_tolerance(BigDouble other, BigDouble tolerance) {
+        return sub(other).abs().lte(
+                this.abs().max(other.abs()).mul(tolerance)
+        );
+    }
+    public boolean equals_tolerance(BigDouble other, BigDouble tolerance) {
+        return eq_tolerance(other, tolerance);
+    }
+
+    public boolean neq_tolerance(BigDouble other, BigDouble tolerance) {
+        return !eq_tolerance(other, tolerance);
+    }
+    public boolean notEquals_tolerance(BigDouble other, BigDouble tolerance) {
+        return neq_tolerance(other, tolerance);
+    }
+
+    public boolean lt_tolerance(BigDouble other, BigDouble tolerance) {
+        return !eq_tolerance(other, tolerance) && lt(other);
+    }
+
+    public boolean lte_tolerance(BigDouble other, BigDouble tolerance) {
+        return eq_tolerance(other, tolerance) || lt(other);
+    }
+
+    public boolean gt_tolerance(BigDouble other, BigDouble tolerance) {
+        return !eq_tolerance(other, tolerance) && gt(other);
+    }
+
+    public boolean gte_tolerance(BigDouble other, BigDouble tolerance) {
+        return eq_tolerance(other, tolerance) || gt(other);
+    }
 
 
 
@@ -445,16 +501,12 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public static void main(String[] args) {
         BigDouble x = BigDouble.parseBigDouble("7");
-        BigDouble y = new BigDouble(7);
-        System.out.println(x.gt(y));
-        System.out.println(x.gte(y));
-        System.out.println(x.lt(y));
-        System.out.println(x.lte(y));
-        x = x.sub(new BigDouble(1));
-        System.out.println(x.gt(y));
-        System.out.println(x.gte(y));
-        System.out.println(x.lt(y));
-        System.out.println(x.lte(y));
+        BigDouble y = BigDouble.parseBigDouble("7.0000001");
+        BigDouble tol = new BigDouble(0.0001);
+        System.out.println(x.toDouble());
+        System.out.println(y.toDouble());
+        System.out.println(x.equals(y));
+        System.out.println(x.eq_tolerance(y, tol));
     }
 
 }
