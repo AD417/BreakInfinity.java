@@ -616,12 +616,101 @@ public class BigDouble implements Comparable<BigDouble> {
             BigDouble priceRatio,
             long currentOwned
     ) {
-        return ZERO;
-        // TODO: Figure out where this actually gets implemented.
-        //  Same with all the other things immediately below this at line 1320 in BI.ts
+        BigDouble actualStart = priceStart.mul(priceRatio.pow(currentOwned));
+
+        return new BigDouble(Math.floor(
+                resourcesAvailable.div(actualStart).mul(priceRatio.sub(ONE)).add(ONE).log10()
+                / priceRatio.log10()
+        ));
+    }
+    public static BigDouble affordGeometricSeries(
+            BigDouble resourcesAvailable,
+            double priceStart,
+            double priceRatio,
+            long currentOwned
+    ) {
+        return affordGeometricSeries(
+                resourcesAvailable,
+                new BigDouble(priceStart),
+                new BigDouble(priceRatio),
+                currentOwned
+        );
     }
 
-    //...
+    /**
+     * How much resource would it cost to buy (numItems) items if you already have currentOwned,
+     * the initial price is priceStart and it multiplies by priceRatio each purchase?
+     */
+    public static BigDouble sumGeometricSeries(
+            int numItems,
+            BigDouble priceStart,
+            BigDouble priceRatio,
+            int currentOwned
+    ) {
+        // TODO: numItems
+        return priceStart
+                .mul(priceRatio.pow(currentOwned))
+                .mul(ONE.sub(priceRatio.pow(new BigDouble(numItems))))
+                .div(ONE.sub(priceRatio));
+    }
+
+    /**
+     * If you're willing to spend 'resourcesAvailable' and want to buy something with additively
+     * increasing cost each purchase (start at priceStart, add by priceAdd, already own currentOwned),
+     * how much of it can you buy?
+     */
+    public static BigDouble affordArithmeticSeries(
+            BigDouble resourcesAvailable,
+            BigDouble priceStart,
+            BigDouble priceAdd,
+            int currentOwned
+    ) {
+        // TODO: currentOwned, 2, 2
+        BigDouble actualStart = priceStart.add(new BigDouble(currentOwned).mul(priceAdd));
+        BigDouble b = actualStart.sub(priceAdd.div(new BigDouble(2)));
+        BigDouble b2 = b.pow(new BigDouble(2));
+
+        return b.neg()
+                .add(b2.add(priceAdd.mul(resourcesAvailable).mul(new BigDouble(2))).sqrt())
+                .div(priceAdd)
+                .floor();
+    }
+
+    /**
+     * How much resource would it cost to buy (numItems) items if you already have currentOwned,
+     * the initial price is priceStart and it adds priceAdd each purchase?
+     * Adapted from http://www.mathwords.com/a/arithmetic_series.htm
+     */
+    public static BigDouble sumArithmeticSeries(
+            int numItems,
+            BigDouble priceStart,
+            BigDouble priceAdd,
+            int currentOwned
+    ) {
+        // TODO: currentOwned.
+        BigDouble actualStart = priceStart.add(new BigDouble(currentOwned).mul(priceAdd));
+
+        // (n/2)*(2*a+(n-1)*d)
+        // TODO: 2, 2, numItems
+        return new BigDouble(numItems)
+                .div(new BigDouble(2))
+                .mul(actualStart
+                        .mul(new BigDouble(2))
+                        .plus(new BigDouble(numItems).sub(ONE).mul(priceAdd))
+                );
+    }
+
+    /**
+     * When comparing two purchases that cost (resource) and increase your resource/sec by (deltaRpS),
+     * the lowest efficiency score is the better one to purchase.
+     * From Frozen Cookies:
+     * <a href="http://cookieclicker.wikia.com/wiki/Frozen_Cookies_(JavaScript_Add-on)#Efficiency.3F_What.27s_that.3F">...</a>
+     */
+    public static BigDouble efficiencyOfPurchase(
+            BigDouble cost, BigDouble currentRpS, BigDouble deltaRpS
+    ) {
+        return cost.div(currentRpS).add(cost.div(deltaRpS));
+    }
 
     public static BigDouble randomDecimalForTesting(long absMaxExponent) {
         // NOTE: This doesn't follow any kind of sane random distribution, so use this for testing purposes only.
@@ -772,6 +861,42 @@ public class BigDouble implements Comparable<BigDouble> {
         return this.toExponential(places - 1);
     }
 
+    public BigDouble sinh() {
+        // TODO: 2
+        return this.exp().sub(this.neg().exp()).div(new BigDouble(2));
+    }
+
+    public BigDouble cosh() {
+        // TODO: 2
+        return this.exp().add(this.neg().exp()).div(new BigDouble(2));
+    }
+
+    public BigDouble tanh() {
+        return sinh().div(cosh());
+    }
+
+    public double asinh() {
+        // TODO: ln
+        return add(sqr().add(ONE).sqrt()).ln();
+    }
+
+    public double acosh() {
+        return add(ONE).div(ONE.sub(this)).ln() / 2;
+    }
+
+    public double atanh() {
+        // TODO: 1
+        if (this.abs().gte(ONE)) return Double.NaN;
+        return this.add(ONE).div(new BigDouble(1).sub(this)).ln() / 2;
+    }
+
+    /**
+     * Joke function from Realm Grinder
+     */
+    public BigDouble egg() {
+        // TODO: 9
+        return this.add(new BigDouble(9));
+    }
 
     private static class PrivateConstructorArg { }
 
