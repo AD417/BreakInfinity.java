@@ -18,4 +18,8 @@ public class RepeatZeroes {
     public static String trailZeroes(int places) {
         return places > 0 ? "." + repeatZeroes(places) : "";
     }
+
+    public static String padRight(String string, int places) {
+        return String.format("%-" + places + "s", string).replace(" ", "0");
+    }
 }

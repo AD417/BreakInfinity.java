@@ -1,9 +1,9 @@
 package BreakInfinity;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 
 @SuppressWarnings("unused" )
 public class BigDouble implements Comparable<BigDouble> {
@@ -355,18 +355,48 @@ public class BigDouble implements Comparable<BigDouble> {
         );
         return new BigDouble(mantissa, bigger.exponent - 14);
     }
+    public BigDouble add(double other) {
+        return this.add(new BigDouble(other));
+    }
+    public BigDouble add(String other) {
+        return this.add(BigDouble.parseBigDouble(other));
+    }
     public BigDouble plus(BigDouble other) {
         return add(other);
+    }
+    public BigDouble plus(double other) {
+        return this.plus(new BigDouble(other));
+    }
+    public BigDouble plus(String other) {
+        return this.plus(BigDouble.parseBigDouble(other));
     }
 
     public BigDouble sub(BigDouble other) {
         return add(other.neg());
     }
+    public BigDouble sub(double other) {
+        return this.sub(new BigDouble(other));
+    }
+    public BigDouble sub(String other) {
+        return this.sub(BigDouble.parseBigDouble(other));
+    }
     public BigDouble subtract(BigDouble other) {
         return sub(other);
     }
+    public BigDouble subtract(double other) {
+        return this.subtract(new BigDouble(other));
+    }
+    public BigDouble subtract(String other) {
+        return this.subtract(BigDouble.parseBigDouble(other));
+    }
     public BigDouble minus(BigDouble other) {
         return sub(other);
+    }
+    public BigDouble minus(double other) {
+        return this.minus(new BigDouble(other));
+    }
+    public BigDouble minus(String other) {
+        return this.minus(BigDouble.parseBigDouble(other));
     }
 
     public BigDouble mul(BigDouble other) {
@@ -375,25 +405,67 @@ public class BigDouble implements Comparable<BigDouble> {
                 this.exponent + other.exponent
         );
     }
+    public BigDouble mul(double other) {
+        return this.mul(new BigDouble(other));
+    }
+    public BigDouble mul(String other) {
+        return this.mul(BigDouble.parseBigDouble(other));
+    }
     public BigDouble multiply(BigDouble other) {
         return mul(other);
     }
+    public BigDouble multiply(double other) {
+        return this.multiply(new BigDouble(other));
+    }
+    public BigDouble multiply(String other) {
+        return this.multiply(BigDouble.parseBigDouble(other));
+    }
     public BigDouble times(BigDouble other) {
         return mul(other);
+    }
+    public BigDouble times(double other) {
+        return this.times(new BigDouble(other));
+    }
+    public BigDouble times(String other) {
+        return this.times(BigDouble.parseBigDouble(other));
     }
 
     public BigDouble div(BigDouble other) {
         return mul(other.recip());
     }
+    public BigDouble div(double other) {
+        return this.div(new BigDouble(other));
+    }
+    public BigDouble div(String other) {
+        return this.div(BigDouble.parseBigDouble(other));
+    }
     public BigDouble divide(BigDouble other) {
         return div(other);
+    }
+    public BigDouble divide(double other) {
+        return this.divide(new BigDouble(other));
+    }
+    public BigDouble divide(String other) {
+        return this.divide(BigDouble.parseBigDouble(other));
     }
     // NOTE: If we do add in all the things, divideBy and dividedBy don't get statics.
     public BigDouble divideBy(BigDouble other) {
         return div(other);
     }
+    public BigDouble divideBy(double other) {
+        return this.divideBy(new BigDouble(other));
+    }
+    public BigDouble divideBy(String other) {
+        return this.divideBy(BigDouble.parseBigDouble(other));
+    }
     public BigDouble dividedBy(BigDouble other) {
         return div(other);
+    }
+    public BigDouble dividedBy(double other) {
+        return this.dividedBy(new BigDouble(other));
+    }
+    public BigDouble dividedBy(String other) {
+        return this.dividedBy(BigDouble.parseBigDouble(other));
     }
 
     public BigDouble recip() {
@@ -455,52 +527,136 @@ public class BigDouble implements Comparable<BigDouble> {
     public boolean equals(BigDouble other) {
         return this.exponent == other.exponent && this.mantissa == other.mantissa;
     }
+    public boolean equals(double other) {
+        return this.equals(new BigDouble(other));
+    }
+    public boolean equals(String other) {
+        return this.equals(BigDouble.parseBigDouble(other));
+    }
     public boolean eq(BigDouble other) {
         return equals(other);
+    }
+    public boolean eq(double other) {
+        return this.eq(new BigDouble(other));
+    }
+    public boolean eq(String other) {
+        return this.eq(BigDouble.parseBigDouble(other));
     }
 
     public boolean neq(BigDouble other) {
         return !equals(other);
     }
+    public boolean neq(double other) {
+        return this.neq(new BigDouble(other));
+    }
+    public boolean neq(String other) {
+        return this.neq(BigDouble.parseBigDouble(other));
+    }
     public boolean notEquals(BigDouble other) {
         return !equals(other);
+    }
+    public boolean notEquals(double other) {
+        return this.notEquals(new BigDouble(other));
+    }
+    public boolean notEquals(String other) {
+        return this.notEquals(BigDouble.parseBigDouble(other));
     }
 
     // NOTE: maybe I could get away with the extant CompareTo method doing the work for me.
     public boolean lt(BigDouble other) {
         return compareTo(other) < 0;
     }
+    public boolean lt(double other) {
+        return this.lt(new BigDouble(other));
+    }
+    public boolean lt(String other) {
+        return this.lt(BigDouble.parseBigDouble(other));
+    }
     public boolean lessThan(BigDouble other) {
         return lt(other);
+    }
+    public boolean lessThan(double other) {
+        return this.lessThan(new BigDouble(other));
+    }
+    public boolean lessThan(String other) {
+        return this.lessThan(BigDouble.parseBigDouble(other));
     }
 
     public boolean lte(BigDouble other) {
         return compareTo(other) <= 0;
     }
+    public boolean lte(double other) {
+        return this.lte(new BigDouble(other));
+    }
+    public boolean lte(String other) {
+        return this.lte(BigDouble.parseBigDouble(other));
+    }
     public boolean lessThanOrEqualTo(BigDouble other) {
         return lte(other);
+    }
+    public boolean lessThanOrEqualTo(double other) {
+        return this.lessThanOrEqualTo(new BigDouble(other));
+    }
+    public boolean lessThanOrEqualTo(String other) {
+        return this.lessThanOrEqualTo(BigDouble.parseBigDouble(other));
     }
 
     public boolean gt(BigDouble other) {
         return compareTo(other) > 0;
     }
+    public boolean gt(double other) {
+        return this.gt(new BigDouble(other));
+    }
+    public boolean gt(String other) {
+        return this.gt(BigDouble.parseBigDouble(other));
+    }
     public boolean greaterThan(BigDouble other) {
         return gt(other);
+    }
+    public boolean greaterThan(double other) {
+        return this.greaterThan(new BigDouble(other));
+    }
+    public boolean greaterThan(String other) {
+        return this.greaterThan(BigDouble.parseBigDouble(other));
     }
 
     public boolean gte(BigDouble other) {
         return compareTo(other) >= 0;
     }
+    public boolean gte(double other) {
+        return this.gte(new BigDouble(other));
+    }
+    public boolean gte(String other) {
+        return this.gte(BigDouble.parseBigDouble(other));
+    }
     public boolean greaterThanOrEqualTo(BigDouble other) {
         return gte(other);
+    }
+    public boolean greaterThanOrEqualTo(double other) {
+        return this.greaterThanOrEqualTo(new BigDouble(other));
+    }
+    public boolean greaterThanOrEqualTo(String other) {
+        return this.greaterThanOrEqualTo(BigDouble.parseBigDouble(other));
     }
 
     public BigDouble max(BigDouble other) {
         return compareTo(other) > 0 ? this : other;
     }
+    public BigDouble max(double other) {
+        return this.max(new BigDouble(other));
+    }
+    public BigDouble max(String other) {
+        return this.max(BigDouble.parseBigDouble(other));
+    }
 
     public BigDouble min(BigDouble other) {
         return compareTo(other) < 0 ? this : other;
+    }
+    public BigDouble min(double other) {
+        return this.min(new BigDouble(other));
+    }
+    public BigDouble min(String other) {
+        return this.min(BigDouble.parseBigDouble(other));
     }
 
     public BigDouble clamp(BigDouble lower, BigDouble higher) {
@@ -836,10 +992,9 @@ public class BigDouble implements Comparable<BigDouble> {
             BigDouble priceRatio,
             int currentOwned
     ) {
-        // TODO: numItems
         return priceStart
                 .mul(priceRatio.pow(currentOwned))
-                .mul(ONE.sub(priceRatio.pow(new BigDouble(numItems))))
+                .mul(ONE.sub(priceRatio.pow(numItems)))
                 .div(ONE.sub(priceRatio));
     }
 
@@ -854,13 +1009,12 @@ public class BigDouble implements Comparable<BigDouble> {
             BigDouble priceAdd,
             int currentOwned
     ) {
-        // TODO: currentOwned, 2, 2
-        BigDouble actualStart = priceStart.add(new BigDouble(currentOwned).mul(priceAdd));
-        BigDouble b = actualStart.sub(priceAdd.div(new BigDouble(2)));
-        BigDouble b2 = b.pow(new BigDouble(2));
+        BigDouble actualStart = priceStart.add(priceAdd.mul(currentOwned));
+        BigDouble b = actualStart.sub(priceAdd.div(2));
+        BigDouble b2 = b.pow(2);
 
         return b.neg()
-                .add(b2.add(priceAdd.mul(resourcesAvailable).mul(new BigDouble(2))).sqrt())
+                .add(b2.add(priceAdd.mul(resourcesAvailable).mul(2)).sqrt())
                 .div(priceAdd)
                 .floor();
     }
@@ -876,17 +1030,13 @@ public class BigDouble implements Comparable<BigDouble> {
             BigDouble priceAdd,
             int currentOwned
     ) {
-        // TODO: currentOwned.
-        BigDouble actualStart = priceStart.add(new BigDouble(currentOwned).mul(priceAdd));
+        BigDouble actualStart = priceStart.add(priceAdd.mul(currentOwned));
 
         // (n/2)*(2*a+(n-1)*d)
-        // TODO: 2, 2, numItems
+        // numItems
         return new BigDouble(numItems)
-                .div(new BigDouble(2))
-                .mul(actualStart
-                        .mul(new BigDouble(2))
-                        .plus(new BigDouble(numItems).sub(ONE).mul(priceAdd))
-                );
+                .div(2)
+                .mul(actualStart.mul(2).plus(new BigDouble(numItems).sub(ONE).mul(priceAdd)));
     }
 
     /**
@@ -1027,17 +1177,37 @@ public class BigDouble implements Comparable<BigDouble> {
         return df.format(rounded) + "e" + (exponent >= 0 ? "+" : "") + exponent;
     }
 
-    public String toFixed(int places) {
-        if (isInfinite(this)) return Double.toString(mantissa);
-        if (mantissa == 0 || exponent < -Constants.EXP_LIMIT) {
-            return "0" + RepeatZeroes.trailZeroes(places);
+    private String toFixed(int places)
+    {
+        if (places < 0) {
+            places = Constants.MAX_SIGNIFICANT_DIGITS;
+        }
+        if (exponent <= -Constants.EXP_LIMIT || mantissa == 0) {
+            return "0" + (
+                    places > 0 ?
+                    RepeatZeroes.padRight(".", places) :
+                    ""
+            );
         }
 
-        String mantissaStr = Double.toString(mantissa).replace(".", "");//, this.e + 1, "0");
-        String mantissaZeroes = RepeatZeroes.repeatZeroes(
-                (int)exponent - mantissaStr.length() + 1
-        );
-        return mantissa + mantissaZeroes + RepeatZeroes.trailZeroes(places);
+        // two cases:
+        // 1) exponent is 17 or greater: just print out mantissa with the appropriate number of zeroes after it
+        // 2) exponent is 16 or less: use basic toFixed
+
+        if (exponent >= Constants.MAX_SIGNIFICANT_DIGITS)
+        {
+            // TODO: StringBuilder-optimizable, and frankly just bad in general.
+            String out =  Double.toString(mantissa)
+                    .replace(".", "");
+            out = RepeatZeroes.padRight(out, (int)exponent + 1)
+                    + (places > 0 ? RepeatZeroes.padRight(".", places+1) : "");
+        }
+
+        long multiplier = (long) Math.pow(10, places);
+        double roundedValue = Math.round(this.toDouble() * multiplier) / (double) multiplier;
+
+        // Not malformed. I think.
+        return String.format("%." + places + "f", roundedValue);
     }
 
     public String toPrecision(int places) {
@@ -1051,8 +1221,7 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
     public BigDouble sinh() {
-        // TODO: 2
-        return this.exp().sub(this.neg().exp()).div(new BigDouble(2));
+        return this.exp().sub(this.neg().exp()).div(2);
     }
     public static BigDouble sinh(BigDouble value) {
         return value.sinh();
@@ -1065,8 +1234,7 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
     public BigDouble cosh() {
-        // TODO: 2
-        return this.exp().add(this.neg().exp()).div(new BigDouble(2));
+        return this.exp().add(this.neg().exp()).div(2);
     }
     public static BigDouble cosh(BigDouble value) {
         return value.cosh();
@@ -1092,8 +1260,7 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
     public double asinh() {
-        // TODO: ln
-        return add(sqr().add(ONE).sqrt()).ln();
+        return ln(this.add(sqr().add(ONE).sqrt()));
     }
     public static double asinh(BigDouble value) {
         return value.asinh();
@@ -1119,9 +1286,8 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
     public double atanh() {
-        // TODO: 1
-        if (this.abs().gte(ONE)) return Double.NaN;
-        return this.add(ONE).div(new BigDouble(1).sub(this)).ln() / 2;
+        if (this.abs().gte(1)) return Double.NaN;
+        return ln(this.add(1).div(ONE.sub(this))) / 2;
     }
     public static double atanh(BigDouble value) {
         return value.atanh();
@@ -1136,17 +1302,31 @@ public class BigDouble implements Comparable<BigDouble> {
     /**
      * Joke function from Realm Grinder
      */
+    public BigDouble ascensionPenalty(int ascensions) {
+        if (ascensions == 0) {
+            return this;
+        }
+        return this.pow(Math.pow(10, -ascensions));
+    }
+
+    /**
+     * Joke function from Cookie Clicker. It's 'egg'
+     */
     public BigDouble egg() {
-        // TODO: 9
-        return this.add(new BigDouble(9));
+        return this.add(9);
     }
 
     private static class PrivateConstructorArg { }
 
     public static void main(String[] args) {
-        String x;
-        for (int i = 0; i < 100; i++) {
-            x = BigDouble.randomDecimalForTesting(1000).toPrecision(5);
+        BigDouble x = new BigDouble(3).add(2);
+        for (int i = 0; i < 10000; i++) {
+            BigDouble y = BigDouble.randomDecimalForTesting(Long.MAX_VALUE >> 1);
+            String yStr = y.toPrecision(5);
+            System.out.println();
+            System.out.println(y);
+            System.out.println(yStr);
+            x = x.add(yStr);
             System.out.println(x);
         }
     }
