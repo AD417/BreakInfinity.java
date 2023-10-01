@@ -140,9 +140,15 @@ public class BigDouble implements Comparable<BigDouble> {
         return fromMantissaExponentNoNormalize(Math.abs(mantissa), exponent);
     }
 
-    // public static BigDouble abs(BigDouble value) {
-    //      return value.abs();
-    // }
+    public static BigDouble abs(BigDouble value) {
+         return value.abs();
+    }
+    public static BigDouble abs(double value) {
+        return new BigDouble(value).abs();
+    }
+    public static BigDouble abs(String value) {
+        return BigDouble.parseBigDouble(value).abs();
+    }
 
     /* TODO: The Original JS version uses a ton of typing shenanigans to avoid needing
      * to declare several methods. We don't have that luxury. I'll ignore it for now,
@@ -152,22 +158,76 @@ public class BigDouble implements Comparable<BigDouble> {
     public BigDouble neg() {
         return fromMantissaExponentNoNormalize(-mantissa, exponent);
     }
+    public static BigDouble neg(BigDouble value) {
+        return value.neg();
+    }
+    public static BigDouble neg(double value) {
+        return new BigDouble(value).neg();
+    }
+    public static BigDouble neg(String value) {
+        return BigDouble.parseBigDouble(value).neg();
+    }
     public BigDouble negate() {
         return neg();
     }
+    public static BigDouble negate(BigDouble value) {
+        return value.neg();
+    }
+    public static BigDouble negate(double value) {
+        return new BigDouble(value).neg();
+    }
+    public static BigDouble negate(String value) {
+        return BigDouble.parseBigDouble(value).neg();
+    }
     public BigDouble negated() {
         return neg();
+    }
+    public static BigDouble negated(BigDouble value) {
+        return value.neg();
+    }
+    public static BigDouble negated(double value) {
+        return new BigDouble(value).neg();
+    }
+    public static BigDouble negated(String value) {
+        return BigDouble.parseBigDouble(value).neg();
     }
 
 
     public double signum() {
         return Math.signum(mantissa);
     }
+    public static double signum(BigDouble value) {
+        return value.signum();
+    }
+    public static double signum(double value) {
+        return new BigDouble(value).signum();
+    }
+    public static double signum(String value) {
+        return BigDouble.parseBigDouble(value).signum();
+    }
     public double sign() {
         return signum();
     }
+    public static double sign(BigDouble value) {
+        return value.signum();
+    }
+    public static double sign(double value) {
+        return new BigDouble(value).signum();
+    }
+    public static double sign(String value) {
+        return BigDouble.parseBigDouble(value).signum();
+    }
     public double sgn() {
         return signum();
+    }
+    public static double sgn(BigDouble value) {
+        return value.signum();
+    }
+    public static double sgn(double value) {
+        return new BigDouble(value).signum();
+    }
+    public static double sgn(String value) {
+        return BigDouble.parseBigDouble(value).signum();
     }
 
     public BigDouble round() {
@@ -179,6 +239,15 @@ public class BigDouble implements Comparable<BigDouble> {
             return new BigDouble(Math.round(toDouble()));
         }
         return this;
+    }
+    public static BigDouble round(BigDouble value) {
+        return value.round();
+    }
+    public static BigDouble round(double value) {
+        return new BigDouble(value).round();
+    }
+    public static BigDouble round(String value) {
+        return BigDouble.parseBigDouble(value).round();
     }
 
     public BigDouble floor() {
@@ -192,6 +261,15 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return this;
     }
+    public static BigDouble floor(BigDouble value) {
+        return value.floor();
+    }
+    public static BigDouble floor(double value) {
+        return new BigDouble(value).floor();
+    }
+    public static BigDouble floor(String value) {
+        return BigDouble.parseBigDouble(value).floor();
+    }
 
     public BigDouble ceil() {
         if (isInfinite(this)) return this;
@@ -203,6 +281,15 @@ public class BigDouble implements Comparable<BigDouble> {
             return new BigDouble(Math.ceil(toDouble()));
         }
         return this;
+    }
+    public static BigDouble ceil(BigDouble value) {
+        return value.ceil();
+    }
+    public static BigDouble ceil(double value) {
+        return new BigDouble(value).ceil();
+    }
+    public static BigDouble ceil(String value) {
+        return BigDouble.parseBigDouble(value).ceil();
     }
 
     public BigDouble trunc() {
@@ -216,8 +303,26 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return this;
     }
+    public static BigDouble trunc(BigDouble value) {
+        return value.trunc();
+    }
+    public static BigDouble trunc(double value) {
+        return new BigDouble(value).trunc();
+    }
+    public static BigDouble trunc(String value) {
+        return BigDouble.parseBigDouble(value).trunc();
+    }
     public BigDouble truncate() {
         return trunc();
+    }
+    public static BigDouble truncate(BigDouble value) {
+        return value.trunc();
+    }
+    public static BigDouble truncate(double value) {
+        return new BigDouble(value).trunc();
+    }
+    public static BigDouble truncate(String value) {
+        return BigDouble.parseBigDouble(value).trunc();
     }
 
     public BigDouble add(BigDouble other) {
@@ -454,13 +559,40 @@ public class BigDouble implements Comparable<BigDouble> {
     public double log10() {
         return exponent + Math.log10(mantissa);
     }
+    public static double log10(BigDouble value) {
+        return value.log10();
+    }
+    public static double log10(double value) {
+        return new BigDouble(value).log10();
+    }
+    public static double log10(String value) {
+        return BigDouble.parseBigDouble(value).log10();
+    }
 
     public double absLog10() {
         return exponent + Math.log10(Math.abs(mantissa));
     }
+    public static double absLog10(BigDouble value) {
+        return value.absLog10();
+    }
+    public static double absLog10(double value) {
+        return new BigDouble(value).absLog10();
+    }
+    public static double absLog10(String value) {
+        return BigDouble.parseBigDouble(value).absLog10();
+    }
 
     public double pLog10() {
         return mantissa <= 0 || exponent < 0 ? 0 : log10();
+    }
+    public static double pLog10(BigDouble value) {
+        return value.pLog10();
+    }
+    public static double pLog10(double value) {
+        return new BigDouble(value).pLog10();
+    }
+    public static double pLog10(String value) {
+        return BigDouble.parseBigDouble(value).pLog10();
     }
 
     public double log() {
@@ -468,6 +600,9 @@ public class BigDouble implements Comparable<BigDouble> {
     }
     public double logarithm() {
         return log();
+    }
+    public static double logarithm(BigDouble value) {
+        return value.logarithm();
     }
 
     public double log(double base) {
@@ -488,6 +623,15 @@ public class BigDouble implements Comparable<BigDouble> {
 
     public double ln() {
         return log();
+    }
+    public static double ln(BigDouble value) {
+        return value.ln();
+    }
+    public static double ln(double value) {
+        return new BigDouble(value).ln();
+    }
+    public static double ln(String value) {
+        return BigDouble.parseBigDouble(value).ln();
     }
 
     public static BigDouble pow10(long value) {
@@ -561,9 +705,27 @@ public class BigDouble implements Comparable<BigDouble> {
         if (-706 < x && x < 709) return new BigDouble(Math.exp(x));
         return pow(Math.E);
     }
+    public static BigDouble exp(BigDouble value) {
+        return value.exp();
+    }
+    public static BigDouble exp(double value) {
+        return new BigDouble(value).exp();
+    }
+    public static BigDouble exp(String value) {
+        return BigDouble.parseBigDouble(value).exp();
+    }
 
     public BigDouble sqr() {
         return normalize(mantissa * mantissa, exponent * 2);
+    }
+    public static BigDouble sqr(BigDouble value) {
+        return value.sqr();
+    }
+    public static BigDouble sqr(double value) {
+        return new BigDouble(value).sqr();
+    }
+    public static BigDouble sqr(String value) {
+        return BigDouble.parseBigDouble(value).sqr();
     }
 
     public BigDouble sqrt() {
@@ -577,12 +739,30 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return normalize(Math.sqrt(mantissa), exponent / 2);
     }
+    public static BigDouble sqrt(BigDouble value) {
+        return value.sqrt();
+    }
+    public static BigDouble sqrt(double value) {
+        return new BigDouble(Math.sqrt(value));
+    }
+    public static BigDouble sqrt(String value) {
+        return BigDouble.parseBigDouble(value).sqrt();
+    }
 
     public BigDouble cube() {
         return normalize(
                 mantissa * mantissa * mantissa,
                 exponent * 3
         );
+    }
+    public static BigDouble cube(BigDouble value) {
+        return value.cube();
+    }
+    public static BigDouble cube(double value) {
+        return new BigDouble(value).cube();
+    }
+    public static BigDouble cube(String value) {
+        return BigDouble.parseBigDouble(value).cube();
     }
 
     public BigDouble cbrt() {
@@ -601,6 +781,15 @@ public class BigDouble implements Comparable<BigDouble> {
             default -> // 0
                     normalize(newMantissa, exponent / 3);
         };
+    }
+    public static BigDouble cbrt(BigDouble value) {
+        return value.cbrt();
+    }
+    public static BigDouble cbrt(double value) {
+        return new BigDouble(Math.cbrt(value));
+    }
+    public static BigDouble cbrt(String value) {
+        return BigDouble.parseBigDouble(value).cbrt();
     }
 
     /**
@@ -865,29 +1054,83 @@ public class BigDouble implements Comparable<BigDouble> {
         // TODO: 2
         return this.exp().sub(this.neg().exp()).div(new BigDouble(2));
     }
+    public static BigDouble sinh(BigDouble value) {
+        return value.sinh();
+    }
+    public static BigDouble sinh(double value) {
+        return new BigDouble(value).sinh();
+    }
+    public static BigDouble sinh(String value) {
+        return BigDouble.parseBigDouble(value).sinh();
+    }
 
     public BigDouble cosh() {
         // TODO: 2
         return this.exp().add(this.neg().exp()).div(new BigDouble(2));
     }
+    public static BigDouble cosh(BigDouble value) {
+        return value.cosh();
+    }
+    public static BigDouble cosh(double value) {
+        return new BigDouble(value).cosh();
+    }
+    public static BigDouble cosh(String value) {
+        return BigDouble.parseBigDouble(value).cosh();
+    }
 
     public BigDouble tanh() {
         return sinh().div(cosh());
+    }
+    public static BigDouble tanh(BigDouble value) {
+        return value.tanh();
+    }
+    public static BigDouble tanh(double value) {
+        return new BigDouble(value).tanh();
+    }
+    public static BigDouble tanh(String value) {
+        return BigDouble.parseBigDouble(value).tanh();
     }
 
     public double asinh() {
         // TODO: ln
         return add(sqr().add(ONE).sqrt()).ln();
     }
+    public static double asinh(BigDouble value) {
+        return value.asinh();
+    }
+    public static double asinh(double value) {
+        return new BigDouble(value).asinh();
+    }
+    public static double asinh(String value) {
+        return BigDouble.parseBigDouble(value).asinh();
+    }
 
     public double acosh() {
         return add(ONE).div(ONE.sub(this)).ln() / 2;
+    }
+    public static double acosh(BigDouble value) {
+        return value.acosh();
+    }
+    public static double acosh(double value) {
+        return new BigDouble(value).acosh();
+    }
+    public static double acosh(String value) {
+        return BigDouble.parseBigDouble(value).acosh();
     }
 
     public double atanh() {
         // TODO: 1
         if (this.abs().gte(ONE)) return Double.NaN;
         return this.add(ONE).div(new BigDouble(1).sub(this)).ln() / 2;
+    }
+    public static double atanh(BigDouble value) {
+        return value.atanh();
+    }
+    public static double atanh(double value) {
+        return new BigDouble(value).atanh();
+    }
+    public static double atanh(String value) {
+        return BigDouble.parseBigDouble(value).atanh();
     }
 
     /**
