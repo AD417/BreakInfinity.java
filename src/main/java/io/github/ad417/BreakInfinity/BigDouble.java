@@ -1,8 +1,8 @@
-package BreakInfinity;
+package io.github.ad417.BreakInfinity;
 
+import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 
 
 @SuppressWarnings("unused" )
@@ -1044,7 +1044,7 @@ public class BigDouble implements Comparable<BigDouble> {
     /**
      * How much resource would it cost to buy (numItems) items if you already have currentOwned,
      * the initial price is priceStart and it adds priceAdd each purchase?
-     * Adapted from http://www.mathwords.com/a/arithmetic_series.htm
+     * Adapted from <a href="http://www.mathwords.com/a/arithmetic_series.htm">...</a>
      */
     public static BigDouble sumArithmeticSeries(
             int numItems,

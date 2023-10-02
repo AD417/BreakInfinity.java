@@ -1,4 +1,4 @@
-package BreakInfinity;
+package io.github.ad417.BreakInfinity;
 
 /**
  * We need this lookup table because Math.pow(10, exponent)

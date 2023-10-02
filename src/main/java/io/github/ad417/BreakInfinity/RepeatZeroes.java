@@ -1,4 +1,4 @@
-package BreakInfinity;
+package io.github.ad417.BreakInfinity;
 
 import java.util.HashMap;
 
