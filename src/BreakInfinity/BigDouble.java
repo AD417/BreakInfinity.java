@@ -44,6 +44,10 @@ public class BigDouble implements Comparable<BigDouble> {
         this.exponent = other.exponent;
     }
 
+    public BigDouble(String value) {
+        this(BigDouble.parseBigDouble(value));
+    }
+
     public static BigDouble normalize(double mantissa, long exponent) {
         if (mantissa >= 1 && mantissa < 10 || !Double.isFinite(mantissa)) {
             return fromMantissaExponentNoNormalize(mantissa, exponent);
@@ -68,26 +72,26 @@ public class BigDouble implements Comparable<BigDouble> {
         return new BigDouble(mantissa, exponent, new PrivateConstructorArg());
     }
 
-    public static BigDouble ZERO = fromMantissaExponentNoNormalize(0, 0);
+    public static final BigDouble ZERO = fromMantissaExponentNoNormalize(0, 0);
 
-    public static BigDouble ONE
+    public static final BigDouble ONE
             = fromMantissaExponentNoNormalize(1, 0);
 
-    public static BigDouble NaN
+    public static final BigDouble NaN
             = fromMantissaExponentNoNormalize(Double.NaN, Long.MIN_VALUE);
 
     public static boolean isNaN(BigDouble value) {
         return Double.isNaN(value.mantissa);
     }
 
-    public static BigDouble POSITIVE_INFINITY
+    public static final BigDouble POSITIVE_INFINITY
             = fromMantissaExponentNoNormalize(Double.POSITIVE_INFINITY, 0);
 
     public static boolean isPositiveInfinity(BigDouble value) {
         return Double.isInfinite(value.mantissa) && value.mantissa > 0;
     }
 
-    public static BigDouble NEGATIVE_INFINITY
+    public static final BigDouble NEGATIVE_INFINITY
             = fromMantissaExponentNoNormalize(Double.NEGATIVE_INFINITY, 0);
 
     public static boolean isNegativeInfinity(BigDouble value) {
@@ -471,11 +475,29 @@ public class BigDouble implements Comparable<BigDouble> {
     public BigDouble recip() {
         return normalize(1 / mantissa, -exponent);
     }
+    public static BigDouble recip(double value) {
+        return new BigDouble(value).recip();
+    }
+    public static BigDouble recip(String value) {
+        return BigDouble.parseBigDouble(value).recip();
+    }
     public BigDouble reciprocal() {
         return recip();
     }
+    public static BigDouble reciprocal(double value) {
+        return new BigDouble(value).reciprocal();
+    }
+    public static BigDouble reciprocal(String value) {
+        return BigDouble.parseBigDouble(value).reciprocal();
+    }
     public BigDouble reciprocate() {
         return recip();
+    }
+    public static BigDouble reciprocate(double value) {
+        return new BigDouble(value).reciprocate();
+    }
+    public static BigDouble reciprocate(String value) {
+        return BigDouble.parseBigDouble(value).reciprocate();
     }
 
     @Override
