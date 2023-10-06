@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("maven-publish")
+    id("signing")
 }
 
 group = "io.github.ad417"
@@ -24,23 +25,66 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-
-            groupId = "io.github.ad417"
-            artifactId = "BreakInfinity"
-            version = "0.1.0"
-        }
+signing {
+    // require(true)
+    configure<SigningExtension> {
+        useInMemoryPgpKeys(
+                project.findProperty("SIGNING_KEY") as String,
+                project.findProperty("SIGNING_PASSWORD") as String
+        )
+        sign(publishing.publications)
     }
-    repositories {
-        maven {
-            name = "MyRepo" //  optional target repository name
-            url = uri("http://my.org.server/repo/url")
-            credentials {
-                // TODO
+}
+
+publishing {
+
+    configure<JavaPluginExtension> {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    configure<PublishingExtension> {
+        publications {
+            val main by creating(MavenPublication::class) {
+                from(components["java"])
+
+                pom {
+                    name.set("BeakInfinity")
+                    description.set(
+                            "A Java port of break_infinity.js - a solution for incremental games which want to deal with very large numbers"
+                    )
+                    url.set("https://github.com/AD417/BreakInfinity.java")
+                    licenses {
+                        license {
+                            name.set("MIT")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("AD417")
+                            name.set("Alexander Day")
+                            email.set("ard8302@rit.edu")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git@github.com:AD417/BreakInfinity.java.git")
+                        url.set("https://github.com/AD417/BreakInfinity.java")
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "OSSRH"
+                // Is this correct?
+                setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+                credentials {
+                    username = project.findProperty("OSSRH_USER") as String
+                    password = project.findProperty("OSSRH_PASSWORD") as String
+                }
             }
         }
     }
 }
+

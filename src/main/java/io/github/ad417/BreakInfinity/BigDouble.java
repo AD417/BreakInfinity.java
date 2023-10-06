@@ -1764,8 +1764,7 @@ public class BigDouble implements Comparable<BigDouble> {
      * Otherwise, the result is a BigDouble approximately equal to
      * the true mathematical square root of this BigDouble's value.
      *
-     * @param   a   a value.
-     * @return  the positive square root of {@code a}.
+     * @return  the positive square root of this BigDouble.
      *          If the argument is NaN or less than zero, the result is NaN.
      */
     public BigDouble sqrt() {
@@ -2304,18 +2303,5 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
     private static class PrivateConstructorArg { }
-
-    public static void main(String[] args) {
-        BigDouble x = new BigDouble(3).add(2);
-        for (int i = 0; i < 10000; i++) {
-            BigDouble y = BigDouble.randomDecimalForTesting(Long.MAX_VALUE >> 1);
-            String yStr = y.toPrecision(5);
-            System.out.println();
-            System.out.println(y);
-            System.out.println(yStr);
-            x = x.add(yStr);
-            System.out.println(x);
-        }
-    }
 
 }

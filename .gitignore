@@ -31,4 +31,4 @@ bin/
 ### Gradle ###
 .gradle
 build/
-gradlew.*
+gradle.properties
