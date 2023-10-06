@@ -77,8 +77,7 @@ publishing {
         repositories {
             maven {
                 name = "OSSRH"
-                // Is this correct?
-                setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+                setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 credentials {
                     username = project.findProperty("OSSRH_USER") as String
                     password = project.findProperty("OSSRH_PASSWORD") as String

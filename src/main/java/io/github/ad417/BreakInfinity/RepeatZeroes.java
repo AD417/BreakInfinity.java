@@ -2,7 +2,7 @@ package io.github.ad417.BreakInfinity;
 
 import java.util.HashMap;
 
-public class RepeatZeroes {
+class RepeatZeroes {
     private static final HashMap<Integer, String> cache = new HashMap<Integer, String>();
 
     public static String repeatZeroes(int count) {
