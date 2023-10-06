@@ -5,8 +5,13 @@ a solution for incremental games which want to deal with very large numbers
 and want to prioritize speed over accuracy.
 
 ## Installation
-Coming soon. If you really wave to use this now, drop the entire `BreakInfinity` folder in
-your project.
+You can add this library to your project using Gradle:
+```kotlin
+dependencies {
+    //...
+    implementation("io.github.ad417:BreakInfinity:0.1.0")
+}
+```
 
 ## Use
 The library exports a single class BigDouble, constructor of which accepts a

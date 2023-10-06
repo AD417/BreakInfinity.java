@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"io.github.ad417.BreakInfinity","l":"BigDouble"}];updateSearchResults();

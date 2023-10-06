@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
-
+/**
+ * A BigDouble's value is simply mantissa * 10 ^ exponent.
+ */
 @SuppressWarnings("unused" )
 public class BigDouble implements Comparable<BigDouble> {
     private final double mantissa;
@@ -15,6 +17,12 @@ public class BigDouble implements Comparable<BigDouble> {
         this.exponent = exponent;
     }
 
+    /**
+     * Create a BigDouble by specifying the mantissa and exponent seperately.
+     * @param mantissa A floating-point number between [1, 10) OR exactly 0.
+     *                 Other values will be normalized to within this range.
+     * @param exponent A long number of any value. Represents the exponent.
+     */
     public BigDouble(double mantissa, long exponent) {
         BigDouble other = normalize(mantissa, exponent);
         this.mantissa = other.mantissa;
@@ -26,6 +34,10 @@ public class BigDouble implements Comparable<BigDouble> {
         exponent = other.exponent;
     }
 
+    /**
+     * Create a BigDouble from a primitive number.
+     * @param value a number to convert to a BigDouble.
+     */
     public BigDouble(double value) {
         // Java hates direct assignment to this. Fine.
         BigDouble other;
@@ -44,11 +56,16 @@ public class BigDouble implements Comparable<BigDouble> {
         this.exponent = other.exponent;
     }
 
+    /**
+     * Create a BigDouble from a properly formatted
+     * @param value A String of the form X.XXeYYY, where
+     *              X.XX is the mantissa and YYY is the exponent.
+     */
     public BigDouble(String value) {
         this(BigDouble.parseBigDouble(value));
     }
 
-    public static BigDouble normalize(double mantissa, long exponent) {
+    private static BigDouble normalize(double mantissa, long exponent) {
         if (mantissa >= 1 && mantissa < 10 || !Double.isFinite(mantissa)) {
             return fromMantissaExponentNoNormalize(mantissa, exponent);
         }
@@ -68,44 +85,91 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
 
-    public static BigDouble fromMantissaExponentNoNormalize(double mantissa, long exponent) {
+    private static BigDouble fromMantissaExponentNoNormalize(double mantissa, long exponent) {
         return new BigDouble(mantissa, exponent, new PrivateConstructorArg());
     }
 
+    /**
+     * The singular canonical value representing 0.0.
+     */
     public static final BigDouble ZERO = fromMantissaExponentNoNormalize(0, 0);
 
+    /**
+     * The BigDouble value for 1.0.
+     */
     public static final BigDouble ONE
             = fromMantissaExponentNoNormalize(1, 0);
 
+    /**
+     * The BigDouble value representing a numerical error in either parsing or mathematical operations.
+     */
     public static final BigDouble NaN
             = fromMantissaExponentNoNormalize(Double.NaN, Long.MIN_VALUE);
 
+    /**
+     * Check if a BigDouble is Not a Number (NaN).
+     * @param value A BigDouble to check.
+     * @return Whether the value is NaN.
+     */
     public static boolean isNaN(BigDouble value) {
         return Double.isNaN(value.mantissa);
     }
 
+    /**
+     * The singular canonical representation of a number too large to represent using a BigDouble.
+     */
     public static final BigDouble POSITIVE_INFINITY
             = fromMantissaExponentNoNormalize(Double.POSITIVE_INFINITY, 0);
 
+    /**
+     * Determine if a BigDouble is Positive Infinity.
+     * @param value A BigDouble to check.
+     * @return Whether the value is Positive Infinity.
+     */
     public static boolean isPositiveInfinity(BigDouble value) {
         return Double.isInfinite(value.mantissa) && value.mantissa > 0;
     }
 
+    /**
+     * The singular canonical representation of a negative number too small to represent using a BigDouble.
+     */
     public static final BigDouble NEGATIVE_INFINITY
             = fromMantissaExponentNoNormalize(Double.NEGATIVE_INFINITY, 0);
 
+    /**
+     * Determine if a BigDouble is Negative Infinity.
+     * @param value A BigDouble to check.
+     * @return Whether the value is Negative Infinity.
+     */
     public static boolean isNegativeInfinity(BigDouble value) {
         return Double.isInfinite(value.mantissa) && value.mantissa < 0;
     }
 
+    /**
+     * Determine if a BigDouble is Infinite.
+     * @param value A BigDouble to check.
+     * @return Whether the value is Infinite.
+     */
     public static boolean isInfinite(BigDouble value) {
         return Double.isInfinite(value.mantissa);
     }
 
+    /**
+     * Determine if a BigDouble is not Infinite.
+     * @param value A BigDouble to check.
+     * @return Whether the value is not Infinite.
+     */
     public static boolean isFinite(BigDouble value) {
         return !isInfinite(value);
     }
 
+    /**
+     * Parse a String that is either a valid Number or of the form X.XXeYYY
+     * for some values X.XX and YYY.
+     * @param value A string to parse into a BigDouble
+     * @return A BigDouble equivalent to the value provided.
+     * @throws RuntimeException if the string is malformed or invalid.
+     */
     public static BigDouble parseBigDouble(String value) {
         if (value.indexOf('e') != -1) {
             var parts = value.split("e" );
@@ -126,30 +190,72 @@ public class BigDouble implements Comparable<BigDouble> {
         return result;
     }
 
-    // TS stuffs begins here. I stole the constructor and whatnot from BI.CS
+    /**
+     * Get this BigDouble's mantissa. A double with absolute value between [1, 10) OR exactly 0.
+     * @return The mantissa.
+     */
     public double getMantissa() {
         return mantissa;
     }
+
+    /**
+     * Get this BigDouble's exponent. A long value.
+     * @return
+     */
     public long getExponent() {
         return exponent;
     }
+
+    /**
+     *
+     * @return The Mantissa.
+     * @see #getMantissa()
+     */
     public double m() {
         return mantissa;
     }
+
+    /**
+     *
+     * @return The Exponent
+     * @see #getExponent()
+     */
     public double e() {
         return exponent;
     }
 
+    /**
+     *
+     * @return A positive BigDouble with equivalent magnitude to this BigDouble.
+     */
     public BigDouble abs() {
         return fromMantissaExponentNoNormalize(Math.abs(mantissa), exponent);
     }
 
+    /**
+     *
+     * @param value A value to take the absolute value of.
+     * @return A positive BigDouble with equivalent magnitude to this value.
+     * @see #abs() Delegates to abs() with proper conversion.
+     */
     public static BigDouble abs(BigDouble value) {
          return value.abs();
     }
+    /**
+     *
+     * @param value A value to take the absolute value of.
+     * @return A positive BigDouble with equivalent magnitude to this value.
+     * @see #abs() Delegates to abs() with proper conversion.
+     */
     public static BigDouble abs(double value) {
         return new BigDouble(value).abs();
     }
+    /**
+     *
+     * @param value A value to take the absolute value of.
+     * @return A positive BigDouble with equivalent magnitude to this value.
+     * @see #abs() Delegates to abs() with proper conversion.
+     */
     public static BigDouble abs(String value) {
         return BigDouble.parseBigDouble(value).abs();
     }
@@ -159,81 +265,181 @@ public class BigDouble implements Comparable<BigDouble> {
      * But when it becomes a sufficiently big problem I'll address it.
      */
 
+    /**
+     *
+     * @return A BigDouble with equivalent magnitude to this value but the opposite sign.
+     * value.neg().signum() == -value.signum()
+     */
     public BigDouble neg() {
         return fromMantissaExponentNoNormalize(-mantissa, exponent);
     }
+    /**
+     *
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble neg(BigDouble value) {
         return value.neg();
     }
+    /**
+     *
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble neg(double value) {
         return new BigDouble(value).neg();
     }
+    /**
+     *
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble neg(String value) {
         return BigDouble.parseBigDouble(value).neg();
     }
     public BigDouble negate() {
         return neg();
     }
+    /**
+     * @see #neg() Delegates to neg()
+     */
     public static BigDouble negate(BigDouble value) {
         return value.neg();
     }
+    /**
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble negate(double value) {
         return new BigDouble(value).neg();
     }
+    /**
+     *
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble negate(String value) {
         return BigDouble.parseBigDouble(value).neg();
     }
+    /**
+     * @see #neg() Delegates to neg()
+     */
     public BigDouble negated() {
         return neg();
     }
+    /**
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble negated(BigDouble value) {
         return value.neg();
     }
+    /**
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble negated(double value) {
         return new BigDouble(value).neg();
     }
+    /**
+     * @param value A value to negate.
+     * @return A negated BigDouble.
+     * @see #neg() Delegates to neg() with proper conversion.
+     */
     public static BigDouble negated(String value) {
         return BigDouble.parseBigDouble(value).neg();
     }
 
 
+    /**
+     * @return the signum function of the BigDouble; zero if the argument is zero,
+     * 1.0 if the argument is greater than zero, -1.0 if the argument is less than zero.
+     * Special Cases:
+     * <ul><li>If the argument is NaN, then the result is NaN.</ul>
+     */
     public double signum() {
         return Math.signum(mantissa);
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double signum(BigDouble value) {
         return value.signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double signum(double value) {
         return new BigDouble(value).signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double signum(String value) {
         return BigDouble.parseBigDouble(value).signum();
     }
+    /**
+     * @see #signum() Delegates to signum()
+     */
     public double sign() {
         return signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double sign(BigDouble value) {
         return value.signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double sign(double value) {
         return new BigDouble(value).signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double sign(String value) {
         return BigDouble.parseBigDouble(value).signum();
     }
+    /**
+     * @see #signum() Delegates to signum()
+     */
     public double sgn() {
         return signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double sgn(BigDouble value) {
         return value.signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double sgn(double value) {
         return new BigDouble(value).signum();
     }
+    /**
+     * @see #signum() Delegates to signum() with proper conversion.
+     */
     public static double sgn(String value) {
         return BigDouble.parseBigDouble(value).signum();
     }
 
+    /**
+     * Returns the closest long to the argument, with ties rounding to positive infinity.
+     * Special cases:
+     * <ul><li>If the argument is NaN, the result is NaN.
+     * <li>If the argument is negative infinity or any value less than or equal to -1 * 10 ^ 17 the result is itself.
+     * <li>If the argument is positive infinity or any value greater than or equal to 1 * 10 ^ 17 the result is itself.</ul>
+     * @return the value of the BigDouble rounded to the nearest whole number.
+     */
     public BigDouble round() {
         if (exponent < -1) {
             return ZERO;
@@ -244,16 +450,34 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return this;
     }
+
+    /**
+     * @see #round() Delegates to round() with proper conversion.
+     */
     public static BigDouble round(BigDouble value) {
         return value.round();
     }
+    /**
+     * @see #round() Delegates to round() with proper conversion.
+     */
     public static BigDouble round(double value) {
         return new BigDouble(value).round();
     }
+    /**
+     * @see #round() Delegates to round() with proper conversion.
+     */
     public static BigDouble round(String value) {
         return BigDouble.parseBigDouble(value).round();
     }
 
+    /**
+     * @return the largest (closest to positive infinity)
+     * BigDouble value that is less than or equal to the
+     * argument and is equal to a mathematical integer. Special cases:
+     * <ul><li>If the argument value is already equal to a
+     * mathematical integer, then the result is the same as the
+     * argument.  <li>If the argument is NaN or an infinity,
+     * then the result is the same as the argument.</ul>*/
     public BigDouble floor() {
         if (isInfinite(this)) return this;
 
@@ -265,16 +489,38 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return this;
     }
+    /**
+     * @see #floor() Delgates to floor() with proper conversion.
+     */
     public static BigDouble floor(BigDouble value) {
         return value.floor();
     }
+    /**
+     * @see #floor() Delgates to floor() with proper conversion.
+     */
     public static BigDouble floor(double value) {
         return new BigDouble(value).floor();
     }
+    /**
+     * @see #floor() Delgates to floor() with proper conversion.
+     */
     public static BigDouble floor(String value) {
         return BigDouble.parseBigDouble(value).floor();
     }
 
+    /**
+     * @return the smallest (closest to negative infinity)
+     * BigDouble value that is greater than or equal to the
+     * argument and is equal to a mathematical integer. Special cases:
+     * <ul><li>If the argument value is already equal to a
+     * mathematical integer, then the result is the same as the
+     * argument.  <li>If the argument is NaN or an infinity,
+     * then the result is the same as the argument.
+     * <li>If the argument value is less than zero but
+     * greater than -1.0, then the result is zero.</ul> Note
+     * that the value of {@code x.ceil()} is exactly the
+     * value of {@code x.neg().floor().neg()}.
+     */
     public BigDouble ceil() {
         if (isInfinite(this)) return this;
 
@@ -286,16 +532,36 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return this;
     }
+    /**
+     * @see #ceil() Delgates to ceil() with proper conversion.
+     */
     public static BigDouble ceil(BigDouble value) {
         return value.ceil();
     }
+    /**
+     * @see #ceil() Delgates to ceil() with proper conversion.
+     */
     public static BigDouble ceil(double value) {
         return new BigDouble(value).ceil();
     }
+    /**
+     * @see #ceil() Delgates to ceil() with proper conversion.
+     */
     public static BigDouble ceil(String value) {
         return BigDouble.parseBigDouble(value).ceil();
     }
 
+    /**
+     * Returns the smallest magnitude (closest to zero)
+     * BigDouble value that is less than or equal to the
+     * argument and is equal to a mathematical integer. Special cases:
+     * <ul><li>If the argument value is already equal to a
+     * mathematical integer, then the result is the same as the
+     * argument.  <li>If the argument is NaN or an infinity,
+     * then the result is the same as the argument.
+     * <li>If the argument value is less than 1.0 but
+     * greater than -1.0, then the result is zero.</ul>
+     */
     public BigDouble trunc() {
         if (exponent < 0) return ZERO;
 
@@ -307,28 +573,56 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return this;
     }
+    /**
+     * @see #trunc() Delegates to trunc() with proper conversion.
+     */
     public static BigDouble trunc(BigDouble value) {
         return value.trunc();
     }
+    /**
+     * @see #trunc() Delegates to trunc() with proper conversion.
+     */
     public static BigDouble trunc(double value) {
         return new BigDouble(value).trunc();
     }
+    /**
+     * @see #trunc() Delegates to trunc() with proper conversion.
+     */
     public static BigDouble trunc(String value) {
         return BigDouble.parseBigDouble(value).trunc();
     }
+    /**
+     * @see #trunc() Delegates to trunc()
+     */
     public BigDouble truncate() {
         return trunc();
     }
+    /**
+     * @see #trunc() Delegates to trunc() with proper conversion.
+     */
     public static BigDouble truncate(BigDouble value) {
         return value.trunc();
     }
+    /**
+     * @see #trunc() Delegates to trunc() with proper conversion.
+     */
     public static BigDouble truncate(double value) {
         return new BigDouble(value).trunc();
     }
+    /**
+     * @see #trunc() Delegates to trunc() with proper conversion.
+     */
     public static BigDouble truncate(String value) {
         return BigDouble.parseBigDouble(value).trunc();
     }
 
+    /**
+     * Adds two numbers together, returning the result as a BigDouble.
+     * Note that BigDouble operations are not in-place, and a new BigDouble
+     * instance is instantiated as the return value.
+     * @param other a value, which may be a number, BigDouble, or valid String.
+     * @return the sum of this BigDouble and the other value.
+     */
     public BigDouble add(BigDouble other) {
         if (isInfinite(this)) return this;
         if (isInfinite(other)) return other;
@@ -359,143 +653,292 @@ public class BigDouble implements Comparable<BigDouble> {
         );
         return new BigDouble(mantissa, bigger.exponent - 14);
     }
+
+    /**
+     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
+     */
     public BigDouble add(double other) {
         return this.add(new BigDouble(other));
     }
+    /**
+     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
+     */
     public BigDouble add(String other) {
         return this.add(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #add(BigDouble) Delegates to add(BigDouble other)
+     */
     public BigDouble plus(BigDouble other) {
         return add(other);
     }
+    /**
+     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
+     */
     public BigDouble plus(double other) {
         return this.plus(new BigDouble(other));
     }
+    /**
+     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
+     */
     public BigDouble plus(String other) {
         return this.plus(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Subtracts the provided value from this BigDouble, returning the result as a BigDouble.
+     * Note that BigDouble operations are not in-place, and a new BigDouble
+     * instance is instantiated as the return value.
+     * @param other a value to subtract, which may be a number, BigDouble, or valid String.
+     * @return the difference of this BigDouble and the other value.
+     */
     public BigDouble sub(BigDouble other) {
         return add(other.neg());
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     */
     public BigDouble sub(double other) {
         return this.sub(new BigDouble(other));
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     */
     public BigDouble sub(String other) {
         return this.sub(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other)
+     */
     public BigDouble subtract(BigDouble other) {
         return sub(other);
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     */
     public BigDouble subtract(double other) {
         return this.subtract(new BigDouble(other));
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     */
     public BigDouble subtract(String other) {
         return this.subtract(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other)
+     */
     public BigDouble minus(BigDouble other) {
         return sub(other);
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     */
     public BigDouble minus(double other) {
         return this.minus(new BigDouble(other));
     }
+    /**
+     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     */
     public BigDouble minus(String other) {
         return this.minus(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Multiply two numbers together, returning the result as a BigDouble.
+     * Note that BigDouble operations are not in-place, and a new BigDouble
+     * instance is instantiated as the return value.
+     * @param other a value to multiply, which may be a number, BigDouble, or valid String.
+     * @return the product of this BigDouble and the other value.
+     */
     public BigDouble mul(BigDouble other) {
         return normalize(
                 this.mantissa * other.mantissa,
                 this.exponent + other.exponent
         );
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     */
     public BigDouble mul(double other) {
         return this.mul(new BigDouble(other));
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     */
     public BigDouble mul(String other) {
         return this.mul(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other).
+     */
     public BigDouble multiply(BigDouble other) {
         return mul(other);
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     */
     public BigDouble multiply(double other) {
         return this.multiply(new BigDouble(other));
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     */
     public BigDouble multiply(String other) {
         return this.multiply(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other)
+     */
     public BigDouble times(BigDouble other) {
         return mul(other);
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     */
     public BigDouble times(double other) {
         return this.times(new BigDouble(other));
     }
+    /**
+     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     */
     public BigDouble times(String other) {
         return this.times(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Divides this BigDouble by the provided value, returning the result as a BigDouble.
+     * Note that BigDouble operations are not in-place, and a new BigDouble
+     * instance is instantiated as the return value. <p> Special cases: <ul><li>If the
+     * provided value is 0.0, the result will be NaN.</ul>
+     * @param other a value to subtract, which may be a number, BigDouble, or valid String.
+     * @return the quotient of this BigDouble and the other value.
+     */
     public BigDouble div(BigDouble other) {
         return mul(other.recip());
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble div(double other) {
         return this.div(new BigDouble(other));
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble div(String other) {
         return this.div(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other).
+     */
     public BigDouble divide(BigDouble other) {
         return div(other);
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble divide(double other) {
         return this.divide(new BigDouble(other));
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble divide(String other) {
         return this.divide(BigDouble.parseBigDouble(other));
     }
     // NOTE: If we do add in all the things, divideBy and dividedBy don't get statics.
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other)
+     */
     public BigDouble divideBy(BigDouble other) {
         return div(other);
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other)
+     */
     public BigDouble divideBy(double other) {
         return this.divideBy(new BigDouble(other));
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble divideBy(String other) {
         return this.divideBy(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other).
+     */
     public BigDouble dividedBy(BigDouble other) {
         return div(other);
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble dividedBy(double other) {
         return this.dividedBy(new BigDouble(other));
     }
+    /**
+     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     */
     public BigDouble dividedBy(String other) {
         return this.dividedBy(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Returns the reciprocal of this value. <p>Special cases: <ul><li>If the
+     * provided value is 0.0, the result will be NaN.<li>If the provided value
+     * is Infinite, the result will also be infinite.</ul>
+     * @return the sum of this BigDouble and the other value.
+     */
     public BigDouble recip() {
         return normalize(1 / mantissa, -exponent);
     }
+    /**
+     * @see #recip() Delegates to recip() with proper conversion.
+     */
     public static BigDouble recip(double value) {
         return new BigDouble(value).recip();
     }
+    /**
+     * @see #recip() Delegates to recip() with proper conversion.
+     */
     public static BigDouble recip(String value) {
         return BigDouble.parseBigDouble(value).recip();
     }
+    /**
+     * @see #recip() Delegates to recip().
+     */
     public BigDouble reciprocal() {
         return recip();
     }
+    /**
+     * @see #recip() Delegates to recip() with proper conversion.
+     */
     public static BigDouble reciprocal(double value) {
         return new BigDouble(value).reciprocal();
     }
+    /**
+     * @see #recip() Delegates to recip() with proper conversion.
+     */
     public static BigDouble reciprocal(String value) {
         return BigDouble.parseBigDouble(value).reciprocal();
     }
+    /**
+     * @see #recip() Delegates to recip().
+     */
     public BigDouble reciprocate() {
         return recip();
     }
+    /**
+     * @see #recip() Delegates to recip() with proper conversion.
+     */
     public static BigDouble reciprocate(double value) {
         return new BigDouble(value).reciprocate();
     }
+    /**
+     * @see #recip() Delegates to recip() with proper conversion.
+     */
     public static BigDouble reciprocate(String value) {
         return BigDouble.parseBigDouble(value).reciprocate();
     }
@@ -539,6 +982,11 @@ public class BigDouble implements Comparable<BigDouble> {
         return Objects.hash(mantissa, exponent);
     }
 
+    /**
+     * Indicates whether some value is "equal to" this one.
+     * @param obj An object to check for equivalence.
+     * @return Whether the object is equal.
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -546,167 +994,354 @@ public class BigDouble implements Comparable<BigDouble> {
         if (obj.getClass() != BigDouble.class) return false;
         return equals((BigDouble) obj);
     }
+
+    /**
+     * Determine if two BigDouble values are exactly equal to each other.
+     * Two BigDoubles are equivalent if and only if both their mantissa and exponent are the same.
+     * @param other The other value to compare. Can be a String, Double, or BigDouble,
+     *              and will be converted appropriately.
+     * @return
+     */
     public boolean equals(BigDouble other) {
         return this.exponent == other.exponent && this.mantissa == other.mantissa;
     }
+    /**
+     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion.
+     */
     public boolean equals(double other) {
         return this.equals(new BigDouble(other));
     }
+    /**
+     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion.
+     */
     public boolean equals(String other) {
         return this.equals(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #equals(BigDouble) Delegates to equals(BigDouble).
+     */
     public boolean eq(BigDouble other) {
         return equals(other);
     }
+    /**
+     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion.
+     */
     public boolean eq(double other) {
         return this.eq(new BigDouble(other));
     }
+    /**
+     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion.
+     */
     public boolean eq(String other) {
         return this.eq(BigDouble.parseBigDouble(other));
     }
 
+
+    /**
+     * @see #equals(BigDouble) Returns the opposite of equals(BigDouble).
+     */
     public boolean neq(BigDouble other) {
         return !equals(other);
     }
+    /**
+     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
+     */
     public boolean neq(double other) {
         return this.neq(new BigDouble(other));
     }
+    /**
+     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
+     */
     public boolean neq(String other) {
         return this.neq(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #neq(BigDouble) Delegates to neq(BigDouble).
+     */
     public boolean notEquals(BigDouble other) {
         return !equals(other);
     }
+    /**
+     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
+     */
     public boolean notEquals(double other) {
         return this.notEquals(new BigDouble(other));
     }
+    /**
+     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
+     */
     public boolean notEquals(String other) {
         return this.notEquals(BigDouble.parseBigDouble(other));
     }
 
     // NOTE: maybe I could get away with the extant CompareTo method doing the work for me.
+    /**
+     * Determine if this BigDouble is less than the provided value.
+     * @param other The other value to compare. Can be a String, Double, or BigDouble,
+     *              and will be converted appropriately.
+     * @return true if and only if this BigDouble is less than the provided value, false otherwise.
+     */
     public boolean lt(BigDouble other) {
         return compareTo(other) < 0;
     }
+    /**
+     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
+     */
     public boolean lt(double other) {
         return this.lt(new BigDouble(other));
     }
+    /**
+     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
+     */
     public boolean lt(String other) {
         return this.lt(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #lt(BigDouble) Delegates to lt(BigDouble).
+     */
     public boolean lessThan(BigDouble other) {
         return lt(other);
     }
+    /**
+     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
+     */
     public boolean lessThan(double other) {
         return this.lessThan(new BigDouble(other));
     }
+    /**
+     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
+     */
     public boolean lessThan(String other) {
         return this.lessThan(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Determine if this BigDouble is less than or equal to the provided value.
+     * @param other The other value to compare. Can be a String, Double, or BigDouble,
+     *              and will be converted appropriately.
+     * @return true if and only if this BigDouble is less than or equal to
+     * the provided value, false otherwise.
+     */
     public boolean lte(BigDouble other) {
         return compareTo(other) <= 0;
     }
+    /**
+     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
+     */
     public boolean lte(double other) {
         return this.lte(new BigDouble(other));
     }
+    /**
+     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
+     */
     public boolean lte(String other) {
         return this.lte(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #lte(BigDouble) Delegates to lte(BigDouble).
+     */
     public boolean lessThanOrEqualTo(BigDouble other) {
         return lte(other);
     }
+    /**
+     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
+     */
     public boolean lessThanOrEqualTo(double other) {
         return this.lessThanOrEqualTo(new BigDouble(other));
     }
+    /**
+     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
+     */
     public boolean lessThanOrEqualTo(String other) {
         return this.lessThanOrEqualTo(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Determine if this BigDouble is greater than the provided value.
+     * @param other The other value to compare. Can be a String, Double, or BigDouble,
+     *              and will be converted appropriately.
+     * @return true if and only if this BigDouble is greater than the provided value,
+     * false otherwise.
+     */
     public boolean gt(BigDouble other) {
         return compareTo(other) > 0;
     }
+    /**
+     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
+     */
     public boolean gt(double other) {
         return this.gt(new BigDouble(other));
     }
+    /**
+     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
+     */
     public boolean gt(String other) {
         return this.gt(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #gt(BigDouble) Delegates to gt(BigDouble).
+     */
     public boolean greaterThan(BigDouble other) {
         return gt(other);
     }
+    /**
+     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
+     */
     public boolean greaterThan(double other) {
         return this.greaterThan(new BigDouble(other));
     }
+    /**
+     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
+     */
     public boolean greaterThan(String other) {
         return this.greaterThan(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Determine if this BigDouble is greater than or equal to the provided value.
+     * @param other The other value to compare. Can be a String, Double, or BigDouble,
+     *              and will be converted appropriately.
+     * @return true if and only if this BigDouble is greater than or equal to
+     * the provided value, false otherwise.
+     */
     public boolean gte(BigDouble other) {
         return compareTo(other) >= 0;
     }
+    /**
+     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
+     */
     public boolean gte(double other) {
         return this.gte(new BigDouble(other));
     }
+    /**
+     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
+     */
     public boolean gte(String other) {
         return this.gte(BigDouble.parseBigDouble(other));
     }
+    /**
+     * @see #gte(BigDouble) Delegates to gte(BigDouble).
+     */
     public boolean greaterThanOrEqualTo(BigDouble other) {
         return gte(other);
     }
+    /**
+     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
+     */
     public boolean greaterThanOrEqualTo(double other) {
         return this.greaterThanOrEqualTo(new BigDouble(other));
     }
+    /**
+     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
+     */
     public boolean greaterThanOrEqualTo(String other) {
         return this.greaterThanOrEqualTo(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Returns the greater of this BigDouble or the other value.
+     * @param other The value to compare this BigDouble to. Can be a String, Double,
+     *              or BigDouble, and will be converted appropriately.
+     * @return The greater value, as a BigDouble.
+     */
     public BigDouble max(BigDouble other) {
         return compareTo(other) > 0 ? this : other;
     }
+    /**
+     * @see #max(BigDouble) Delegates to max(BigDouble) with proper conversion.
+     */
     public BigDouble max(double other) {
         return this.max(new BigDouble(other));
     }
+    /**
+     * @see #max(BigDouble) Delegates to max(BigDouble) with proper conversion.
+     */
     public BigDouble max(String other) {
         return this.max(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Returns the smallest of this BigDouble or the other value.
+     * @param other The value to compare this BigDouble to. Can be a String, Double,
+     *              or BigDouble, and will be converted appropriately.
+     * @return The smaller value, as a BigDouble.
+     */
     public BigDouble min(BigDouble other) {
         return compareTo(other) < 0 ? this : other;
     }
+    /**
+     * @see #min(BigDouble) Delegates to min(BigDouble) with proper conversion.
+     */
     public BigDouble min(double other) {
         return this.min(new BigDouble(other));
     }
+    /**
+     * @see #min(BigDouble) Delegates to min(BigDouble) with proper conversion.
+     */
     public BigDouble min(String other) {
         return this.min(BigDouble.parseBigDouble(other));
     }
 
+    /**
+     * Determine if a value is within two bounds. If it is below or above those bounds,
+     * return the value of lower or higher, respectively.
+     * @param lower The lower bound that this BigDouble may be.
+     * @param higher The upper bound that this BigDouble may be.
+     * @return This BigDouble value, unless outside the bounds defined by lower and higher.
+     */
     public BigDouble clamp(BigDouble lower, BigDouble higher) {
         return max(lower).min(higher);
     }
 
+    /**
+     * Clamp a value such that it must be at least "value".
+     * @param other A lower bound that this BigDouble should be above.
+     * @return This BigDouble, unless less than "other", in which case "other" is returned.
+     */
     public BigDouble clampMin(BigDouble other) {
         return max(other);
     }
 
+    /**
+     * Clamp a value such that it must be at most "value".
+     * @param other An upper bound that this BigDouble should be below.
+     * @return This BigDouble, unless greater than "other", in which case "other" is returned.
+     */
     public BigDouble clampMax(BigDouble other) {
         return min(other);
     }
 
     // It's operators like this one that make me realize how much of a pain it will be
     // to properly overload everything later. 9 methods each.
+
+
     public int cmp_tolerance(BigDouble other, BigDouble tolerance) {
         return eq_tolerance(other, tolerance) ? 0 : cmp(other);
     }
+    /**
+     * @see #cmp_tolerance(BigDouble, BigDouble)  Delegates to cmp_tolerance(BigDouble, BigDouble).
+     */
     public int compare_tolerance(BigDouble other, BigDouble tolerance) {
         return cmp_tolerance(other, tolerance);
     }
 
+    /**
+     * Determine if two values are reasonably close together. If the magnitude of the
+     * difference between the two values is less than tolerance, then the values will
+     * be treated as equal.
+     * @param other The value to compare this BigDouble to.
+     * @param tolerance The maximum amount that the values can differ by while being equivalent.
+     * @return Whether the values are within tolerance of each other.
+     */
     public boolean eq_tolerance(BigDouble other, BigDouble tolerance) {
         return sub(other).abs().lte(
                 this.abs().max(other.abs()).mul(tolerance)
         );
     }
+
+    /**
+     * @see #eq_tolerance(BigDouble, BigDouble)   Delegates to eq_tolerance(BigDouble, BigDouble).
+     */
     public boolean equals_tolerance(BigDouble other, BigDouble tolerance) {
         return eq_tolerance(other, tolerance);
     }
@@ -734,55 +1369,167 @@ public class BigDouble implements Comparable<BigDouble> {
         return eq_tolerance(other, tolerance) || gt(other);
     }
 
+    /**
+     * Returns the base 10 logarithm of this BigDouble value.
+     * Special cases:
+     *
+     * <ul><li>If the argument is NaN or less than zero, then the result
+     * is NaN.
+     * <li>If the argument is positive infinity, then the result is
+     * positive infinity.
+     * <li>If the argument is positive zero or negative zero, then the
+     * result is negative infinity.
+     * <li>If the argument is equal to 10<sup><i>n</i></sup> for
+     * integer <i>n</i>, then the result is <i>n</i>. In particular,
+     * if the argument is {@code 1.0} (10<sup>0</sup>), then the
+     * result is positive zero.
+     * </ul>
+     */
     public double log10() {
         return exponent + Math.log10(mantissa);
     }
+
+    /**
+     * @see #log10() Delegates to log10().
+     */
     public static double log10(BigDouble value) {
         return value.log10();
     }
+    /**
+     * @see #log10() Delegates to log10() with proper conversion.
+     */
     public static double log10(double value) {
         return new BigDouble(value).log10();
     }
+    /**
+     * @see #log10() Delegates to log10() with proper conversion.
+     */
     public static double log10(String value) {
         return BigDouble.parseBigDouble(value).log10();
     }
 
+    /**
+     * Returns the base 10 logarithm of the magnitude of this BigDouble value.
+     * Special cases:
+     *
+     * <ul><li>If the argument is NaN, then the result is NaN.
+     * <li>If the argument is infinite, then the result is
+     * positive infinity.
+     * <li>If the argument is positive zero or negative zero, then the
+     * result is negative infinity.
+     * </ul>
+     */
     public double absLog10() {
         return exponent + Math.log10(Math.abs(mantissa));
     }
+    /**
+     * @see #absLog10()  Delegates to absLog10().
+     */
     public static double absLog10(BigDouble value) {
         return value.absLog10();
     }
+    /**
+     * @see #absLog10()  Delegates to absLog10() with proper conversion.
+     */
     public static double absLog10(double value) {
         return new BigDouble(value).absLog10();
     }
+    /**
+     * @see #absLog10()  Delegates to absLog10() with proper conversion.
+     */
     public static double absLog10(String value) {
         return BigDouble.parseBigDouble(value).absLog10();
     }
 
+    /**
+     * Returns the base 10 logarithm of a BigDouble value, clamped to 0.
+     * Special cases:
+     *
+     * <ul><li>If the argument is NaN, then the result
+     * is NaN.
+     * <li>If the argument is positive infinity, then the result is
+     * positive infinity.
+     * <li>If the argument is less than 1.0, the result is 0.0.
+     * <li>If the argument is equal to 10<sup><i>n</i></sup> for
+     * integer <i>n</i>, then the result is <i>n</i>. In particular,
+     * if the argument is {@code 1.0} (10<sup>0</sup>), then the
+     * result is positive zero.
+     * </ul>
+     */
     public double pLog10() {
         return mantissa <= 0 || exponent < 0 ? 0 : log10();
     }
+    /**
+     * @see #pLog10()  Delegates to pLog10().
+     */
     public static double pLog10(BigDouble value) {
         return value.pLog10();
     }
+    /**
+     * @see #pLog10()  Delegates to pLog10() with proper conversion.
+     */
     public static double pLog10(double value) {
         return new BigDouble(value).pLog10();
     }
+    /**
+     * @see #pLog10()  Delegates to pLog10() with proper conversion.
+     */
     public static double pLog10(String value) {
         return BigDouble.parseBigDouble(value).pLog10();
     }
 
+    /**
+     * Returns the natural logarithm of this BigDouble value.
+     * Special cases:
+     *
+     * <ul><li>If the argument is NaN or less than zero, then the result
+     * is NaN.
+     * <li>If the argument is positive infinity, then the result is
+     * positive infinity.
+     * <li>If the argument is positive zero or negative zero, then the
+     * result is negative infinity.
+     * <li>If the argument is equal to 10<sup><i>n</i></sup> for
+     * integer <i>n</i>, then the result is <i>n</i>. In particular,
+     * if the argument is {@code 1.0} (10<sup>0</sup>), then the
+     * result is positive zero.
+     * </ul>
+     */
     public double log() {
         return 2.302585092994046 * log10();
     }
+    /**
+     * @see #log()  Delegates to log().
+     */
     public double logarithm() {
         return log();
     }
+    /**
+     * @see #log()  Delegates to log() with proper conversion.
+     */
     public static double logarithm(BigDouble value) {
         return value.logarithm();
     }
 
+    /**
+     * Returns the logarithm of this BigDouble value, with the given base.
+     * Special cases:
+     *
+     * <ul><li>If the argument is NaN or less than zero, then the result
+     * is NaN.
+     * <li>If the argument is positive infinity, then the result is
+     * positive infinity.
+     * <li>If the argument is positive zero or negative zero, then the
+     * result is negative infinity.
+     * <li>If the argument is equal to 10<sup><i>n</i></sup> for
+     * integer <i>n</i>, then the result is <i>n</i>. In particular,
+     * if the argument is {@code 1.0} (10<sup>0</sup>), then the
+     * result is positive zero.
+     * <li>If the base is less than 1, the result will equal
+     * this.recip().log(1 / base).
+     * </ul>
+     * @param base the base for this logarithm.
+     * @return the logarithm base B of this BigDouble.
+     */
     public double log(double base) {
         // UN-SAFETY: Most incremental game cases are log(number := 1 or greater, base := 2 or greater).
         // We assume this to be true and thus only need to return a number, not a Decimal,
@@ -791,30 +1538,73 @@ public class BigDouble implements Comparable<BigDouble> {
         // Also, Math.LN10 = 2.302585092994046
         return 2.302585092994046 / Math.log(base) * log10();
     }
+    /**
+     * @see #log(double)  Delegates to log(double).
+     */
     public double logarithm(double base) {
         return log(base);
     }
 
+    /**
+     * Returns the base 10 logarithm of this BigDouble value.
+     * Special cases:
+     *
+     * <ul><li>If the argument is NaN or less than zero, then the result
+     * is NaN.
+     * <li>If the argument is positive infinity, then the result is
+     * positive infinity.
+     * <li>If the argument is positive zero or negative zero, then the
+     * result is negative infinity.
+     * <li>If the argument is equal to 10<sup><i>n</i></sup> for
+     * integer <i>n</i>, then the result is <i>n</i>. In particular,
+     * if the argument is {@code 1.0} (10<sup>0</sup>), then the
+     * result is positive zero.
+     * </ul>
+     */
     public double log2() {
         return 3.321928094887362 * log10();
     }
 
+    /**
+     * @see #log()  Delegates to log().
+     */
     public double ln() {
         return log();
     }
+    /**
+     * @see #log()  Delegates to log() with proper conversion.
+     */
     public static double ln(BigDouble value) {
         return value.ln();
     }
+    /**
+     * @see #log()  Delegates to log() with proper conversion.
+     */
     public static double ln(double value) {
         return new BigDouble(value).ln();
     }
+    /**
+     * @see #log()  Delegates to log() with proper conversion.
+     */
     public static double ln(String value) {
         return BigDouble.parseBigDouble(value).ln();
     }
 
+    /**
+     * Create a new BigDouble that is 10 ^ value.
+     * Equivalent to new BigDouble(1, value).
+     * @param value the value 10 is being raised to.
+     * @return A bigDouble of the form 1e+Value.
+     */
     public static BigDouble pow10(long value) {
         return fromMantissaExponentNoNormalize(1, value);
     }
+
+    /**
+     * Create a new BigDouble value that is 10^value.
+     * @param value The value that 10 is being raised to.
+     * @return A BigDouble equal to 10^value.
+     */
     public static BigDouble pow10(double value) {
         long valueAsLong = (long) value;
         // UN-SAFETY: if value is larger than a long, then the program will break anyway.
@@ -824,16 +1614,37 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return normalize(Math.pow(10, residual), valueAsLong);
     }
+    /**
+     * @see #pow10(double)  Delegates to pow10(double) with proper conversion.
+     */
     public static BigDouble pow10(BigDouble value) {
         return pow10(value.toDouble());
     }
 
+    /**
+     * @see #pow(double)  Delegates to pow(double) with proper conversion.
+     */
     public BigDouble pow(BigDouble power) {
         // UN-SAFETY: if power > Double.MAX_VALUE,
         // anything raised to it is either 0 or infinite.
 
         return pow(power.toDouble());
     }
+
+    /**
+     * Raise a BigDouble to the given power.
+     * <p>Special cases:
+     * <ul><li>If power is negative, and this BigDouble is not an integer,
+     * returns NaN.
+     * <li>If power is less than zero and not an integer, return NaN.
+     * <li>If this BigDouble is negative, and power is not an integer,
+     * return NaN.
+     * <li>If this BigDouble is negative, and power is an odd integer,
+     * the result will be negative.
+     * </ul>
+     * @param power
+     * @return The result as a BigDouble.
+     */
     public BigDouble pow(double power) {
         boolean powerIsInteger = Math.abs(power % 1) < Double.MIN_VALUE;
         if (power < 0 && !powerIsInteger) return NaN;
@@ -878,34 +1689,84 @@ public class BigDouble implements Comparable<BigDouble> {
         return result;
     }
 
+    /**
+     * Returns Euler's number <i>e</i> raised to the power of a
+     * {@code double} value.  Special cases:
+     * <ul><li>If the argument is NaN, the result is NaN.
+     * <li>If the argument is positive infinity, then the result is
+     * positive infinity.
+     * <li>If the argument is negative infinity, then the result is
+     * positive zero.
+     * <li>If the argument is zero, then the result is {@code 1.0}.
+     * </ul>
+     * @return The value e^a, where a is this BigDouble.
+     */
     public BigDouble exp() {
         double x = toDouble();
         if (-706 < x && x < 709) return new BigDouble(Math.exp(x));
-        return pow(Math.E);
+        return new BigDouble(Math.E).pow(this);
     }
+    /**
+     * @see #exp()  Delegates to exp() with proper conversion.
+     */
     public static BigDouble exp(BigDouble value) {
         return value.exp();
     }
+    /**
+     * @see #exp()  Delegates to exp() with proper conversion.
+     */
     public static BigDouble exp(double value) {
         return new BigDouble(value).exp();
     }
+    /**
+     * @see #exp()  Delegates to exp() with proper conversion.
+     */
     public static BigDouble exp(String value) {
         return BigDouble.parseBigDouble(value).exp();
     }
 
+    /**
+     * Squares this BigDouble.
+     * @return the square of this BigDouble.
+     */
     public BigDouble sqr() {
         return normalize(mantissa * mantissa, exponent * 2);
     }
+    /**
+     * @see #sqr()  Delegates to sqr() with proper conversion.
+     */
     public static BigDouble sqr(BigDouble value) {
         return value.sqr();
     }
+    /**
+     * @see #sqr()  Delegates to sqr() with proper conversion.
+     */
     public static BigDouble sqr(double value) {
         return new BigDouble(value).sqr();
     }
+    /**
+     * @see #sqr()  Delegates to sqr() with proper conversion.
+     */
     public static BigDouble sqr(String value) {
         return BigDouble.parseBigDouble(value).sqr();
     }
 
+    /**
+     * Returns the correctly rounded positive square root of this
+     * BigDouble value.
+     * <p>Special cases:
+     * <ul><li>If the argument is NaN or less than zero, then the result
+     * is NaN.
+     * <li>If the argument is positive infinity, then the result is positive
+     * infinity.
+     * <li>If the argument is positive zero or negative zero, then the
+     * result is the same as the argument.</ul>
+     * Otherwise, the result is a BigDouble approximately equal to
+     * the true mathematical square root of this BigDouble's value.
+     *
+     * @return  the positive square root of this BigDouble.
+     *          If the argument is NaN or less than zero, the result is NaN.
+     */
     public BigDouble sqrt() {
         if (mantissa < 0) return NaN;
         if (exponent % 2 != 0) {
@@ -917,32 +1778,77 @@ public class BigDouble implements Comparable<BigDouble> {
         }
         return normalize(Math.sqrt(mantissa), exponent / 2);
     }
+    /**
+     * @see #sqrt()  Delegates to sqrt() with proper conversion.
+     */
     public static BigDouble sqrt(BigDouble value) {
         return value.sqrt();
     }
+    /**
+     * @see #sqrt()  Delegates to sqrt() with proper conversion.
+     */
     public static BigDouble sqrt(double value) {
         return new BigDouble(Math.sqrt(value));
     }
+    /**
+     * @see #sqrt()  Delegates to sqrt() with proper conversion.
+     */
     public static BigDouble sqrt(String value) {
         return BigDouble.parseBigDouble(value).sqrt();
     }
 
+    /**
+     * Cubes this BigDouble. The cube will have the same
+     * sign as the original.
+     * @return the cube of this BigDouble.
+     */
     public BigDouble cube() {
         return normalize(
                 mantissa * mantissa * mantissa,
                 exponent * 3
         );
     }
+    /**
+     * @see #cube()  Delegates to cube() with proper conversion.
+     */
     public static BigDouble cube(BigDouble value) {
         return value.cube();
     }
+    /**
+     * @see #cube()  Delegates to cube() with proper conversion.
+     */
     public static BigDouble cube(double value) {
         return new BigDouble(value).cube();
     }
+    /**
+     * @see #cube()  Delegates to cube() with proper conversion.
+     */
     public static BigDouble cube(String value) {
         return BigDouble.parseBigDouble(value).cube();
     }
 
+    /**
+     * Returns the cube root of this BigDouble value.  For
+     * positive finite {@code x}, {@code x.neg().cbrt() ==
+     * x.cbrt().neg()}; that is, the cube root of a negative value is
+     * the negative of the cube root of that value's magnitude.
+     *
+     * <p>Special cases:
+     *
+     * <ul>
+     *
+     * <li>If the argument is NaN, then the result is NaN.
+     *
+     * <li>If the argument is infinite, then the result is an infinity
+     * with the same sign as the argument.
+     *
+     * <li>If the argument is zero, then the result is a zero with the
+     * same sign as the argument.
+     *
+     * </ul>
+     *
+     * @return  the cube root of this BigDouble.
+     */
     public BigDouble cbrt() {
         int sign = mantissa > 0 ? 1 : -1;
         double newMantissa = Math.cbrt(mantissa);
@@ -960,12 +1866,21 @@ public class BigDouble implements Comparable<BigDouble> {
                     normalize(newMantissa, exponent / 3);
         };
     }
+    /**
+     * @see #cbrt()  Delegates to cbrt() with proper conversion.
+     */
     public static BigDouble cbrt(BigDouble value) {
         return value.cbrt();
     }
+    /**
+     * @see #cbrt()  Delegates to cbrt() with proper conversion.
+     */
     public static BigDouble cbrt(double value) {
         return new BigDouble(Math.cbrt(value));
     }
+    /**
+     * @see #cbrt()  Delegates to cbrt() with proper conversion.
+     */
     public static BigDouble cbrt(String value) {
         return BigDouble.parseBigDouble(value).cbrt();
     }
@@ -1006,7 +1921,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     /**
      * How much resource would it cost to buy (numItems) items if you already have currentOwned,
-     * the initial price is priceStart and it multiplies by priceRatio each purchase?
+     * the initial price is priceStart, and it multiplies by priceRatio each purchase?
      */
     public static BigDouble sumGeometricSeries(
             int numItems,
@@ -1073,7 +1988,7 @@ public class BigDouble implements Comparable<BigDouble> {
         return cost.div(currentRpS).add(cost.div(deltaRpS));
     }
 
-    public static BigDouble randomDecimalForTesting(long absMaxExponent) {
+    private static BigDouble randomDecimalForTesting(long absMaxExponent) {
         // NOTE: This doesn't follow any kind of sane random distribution, so use this for testing purposes only.
         // 5% of the time, have a mantissa of 0
         if (Math.random() * 20 < 1) {
@@ -1105,6 +2020,18 @@ public class BigDouble implements Comparable<BigDouble> {
         */
     }
 
+    /**
+     * Convert this value to a double.
+     * Special cases:
+     * <ul><li>If this value's magnitude is too large to convert to
+     * a Double, return an infinity with the same sign as the argument.
+     * <li>If this value is too small to convert to a double, return
+     * 0.0.
+     * <li>If this value is within ROUND_TOLERANCE of an integer,
+     * return the value rounded be an exact integer.
+     * </ul>
+     * @return a double equal to this BigDouble's value.
+     */
     public double toDouble() {
         // Problem: in JS, new Decimal(116).toNumber() returns 115.99999999999999.
         // TODO: How to fix in general case? It's clear that if toNumber() is
@@ -1150,8 +2077,18 @@ public class BigDouble implements Comparable<BigDouble> {
         return result;
     }
 
+    /**
+     * Get the current Mantissa, truncated to a specific number of decimal places.
+     * Formatting always rounds towards 0.
+     * Special cases:
+     * <ul><li>If this BigDouble is infinite, NaN, or 0, no formatting is applied.
+     * <li>Supplying a places value larger than 17 will simply return the mantissa.
+     * </ul>
+     * @param places The number of places to represent.
+     * @return The mantissa, rounded to the specified number of places.
+     */
     public double mantissaWithDecimalPlaces(int places) {
-        if (isInfinite(this)) {
+        if (isInfinite(this) || isNaN(this)) {
             return mantissa;
         }
 
@@ -1159,6 +2096,7 @@ public class BigDouble implements Comparable<BigDouble> {
             return 0;
         }
 
+        // TODO: would simple multiplication, rounding, and division be better?
         // Create a DecimalFormat instance with the desired pattern
         DecimalFormat df = new DecimalFormat("#." + "0".repeat(places));
 
@@ -1178,6 +2116,12 @@ public class BigDouble implements Comparable<BigDouble> {
         return mantissa + "e" + (exponent >= 0 ? "+" : "") + exponent;
     }
 
+    /**
+     * Return a string representation of this BigDecimal, forcefully
+     * formatted in scientific notation (X.XXeYYY, for some values X.XX and Y)
+     * @param places The number of places in the mantissa.
+     * @return
+     */
     public String toExponential(int places) {
         if (isInfinite(this)) return Double.toString(mantissa);
 
@@ -1195,10 +2139,18 @@ public class BigDouble implements Comparable<BigDouble> {
         // Create a DecimalFormat instance with the desired pattern
         DecimalFormat df = new DecimalFormat("#." + "0".repeat((Math.max(len - numDigits, 0))));
 
-
+        // TODO: wait, doesn't MantissaWithDecimalPlaces do this already?
         return df.format(rounded) + "e" + (exponent >= 0 ? "+" : "") + exponent;
     }
 
+    /**
+     * Return a string representation of this BigDecimal, formatted
+     * with a specific number of places after the decimal point.
+     * Will pad extra positions with zeroes.
+     * @param places the number of places after the decimal point to show.
+     * @return A string representation, with digits added or removed to reach
+     * the specified number of places.
+     */
     private String toFixed(int places)
     {
         if (places < 0) {
@@ -1214,7 +2166,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
         // two cases:
         // 1) exponent is 17 or greater: just print out mantissa with the appropriate number of zeroes after it
-        // 2) exponent is 16 or less: use basic toFixed
+        // 2) exponent is 16 or less: use "basic" toFixed
 
         if (exponent >= Constants.MAX_SIGNIFICANT_DIGITS)
         {
@@ -1232,6 +2184,15 @@ public class BigDouble implements Comparable<BigDouble> {
         return String.format("%." + places + "f", roundedValue);
     }
 
+    /**
+     * Return a string representation of this BigDecimal, formatted
+     * to have at least a specific number of places afer the decimal
+     * point regardless of if it is big enough to be represented in
+     * Scientific notation or not.
+     * @param places The number of places after the decimal point to use.
+     * @return A string representation of this BigDouble with the specified
+     * number of decimal places.
+     */
     public String toPrecision(int places) {
         if (exponent <= -7) {
             return toExponential(places - 1);
@@ -1323,6 +2284,8 @@ public class BigDouble implements Comparable<BigDouble> {
 
     /**
      * Joke function from Realm Grinder
+     * @return the Ascension Penalty for the number of
+     * ascensions you have done.
      */
     public BigDouble ascensionPenalty(int ascensions) {
         if (ascensions == 0) {
@@ -1333,24 +2296,12 @@ public class BigDouble implements Comparable<BigDouble> {
 
     /**
      * Joke function from Cookie Clicker. It's 'egg'
+     * @return egg.
      */
     public BigDouble egg() {
         return this.add(9);
     }
 
     private static class PrivateConstructorArg { }
-
-    public static void main(String[] args) {
-        BigDouble x = new BigDouble(3).add(2);
-        for (int i = 0; i < 10000; i++) {
-            BigDouble y = BigDouble.randomDecimalForTesting(Long.MAX_VALUE >> 1);
-            String yStr = y.toPrecision(5);
-            System.out.println();
-            System.out.println(y);
-            System.out.println(yStr);
-            x = x.add(yStr);
-            System.out.println(x);
-        }
-    }
 
 }
