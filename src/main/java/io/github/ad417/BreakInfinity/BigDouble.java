@@ -200,7 +200,7 @@ public class BigDouble implements Comparable<BigDouble> {
 
     /**
      * Get this BigDouble's exponent. A long value.
-     * @return
+     * @return the exponent.
      */
     public long getExponent() {
         return exponent;
@@ -304,6 +304,8 @@ public class BigDouble implements Comparable<BigDouble> {
         return neg();
     }
     /**
+     * @param value A value to negate.
+     * @return A negated BigDouble.
      * @see #neg() Delegates to neg()
      */
     public static BigDouble negate(BigDouble value) {
@@ -327,12 +329,15 @@ public class BigDouble implements Comparable<BigDouble> {
         return BigDouble.parseBigDouble(value).neg();
     }
     /**
+     * @return A negated BigDouble.
      * @see #neg() Delegates to neg()
      */
     public BigDouble negated() {
         return neg();
     }
     /**
+     * @param value A value to negate.
+     * @return A negated BigDouble.
      * @see #neg() Delegates to neg() with proper conversion.
      */
     public static BigDouble negated(BigDouble value) {
@@ -366,66 +371,85 @@ public class BigDouble implements Comparable<BigDouble> {
         return Math.signum(mantissa);
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double signum(BigDouble value) {
         return value.signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double signum(double value) {
         return new BigDouble(value).signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double signum(String value) {
         return BigDouble.parseBigDouble(value).signum();
     }
     /**
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum()
      */
     public double sign() {
         return signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double sign(BigDouble value) {
         return value.signum();
     }
     /**
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double sign(double value) {
         return new BigDouble(value).signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double sign(String value) {
         return BigDouble.parseBigDouble(value).signum();
     }
     /**
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum()
      */
     public double sgn() {
         return signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double sgn(BigDouble value) {
         return value.signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double sgn(double value) {
         return new BigDouble(value).signum();
     }
     /**
+     * @param value a value to get the sign of.
+     * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
     public static double sgn(String value) {
@@ -1609,7 +1633,7 @@ public class BigDouble implements Comparable<BigDouble> {
         long valueAsLong = (long) value;
         // UN-SAFETY: if value is larger than a long, then the program will break anyway.
         double residual = value - valueAsLong;
-        if (residual < Constants.ROUND_TOLERANCE) {
+        if (Math.abs(residual) < Constants.ROUND_TOLERANCE) {
             return fromMantissaExponentNoNormalize(1, valueAsLong);
         }
         return normalize(Math.pow(10, residual), valueAsLong);
@@ -1642,50 +1666,48 @@ public class BigDouble implements Comparable<BigDouble> {
      * <li>If this BigDouble is negative, and power is an odd integer,
      * the result will be negative.
      * </ul>
-     * @param power
+     * @param power the value to raise this BigDouble to.
      * @return The result as a BigDouble.
      */
     public BigDouble pow(double power) {
-        boolean powerIsInteger = Math.abs(power % 1) < Double.MIN_VALUE;
+        // GUARD: 0 ^ Anything = 0, except 0.
+        if (mantissa == 0) return power == 0 ? ONE : this;
+
+        // GUARD: -XXX ^ 2.5 = NaN
+        boolean powerIsInteger =
+                Math.abs(power) < 9007199254740991L
+                && Math.floor(power) == power;
+
         if (power < 0 && !powerIsInteger) return NaN;
 
+        // FAIL-FAST: 10 ^ x can be computed quickly.
         boolean is10 = exponent == 1 && mantissa - 1 < Double.MIN_VALUE;
-        return is10 ? pow10(power) : powInternal(power);
-    }
-    private BigDouble powInternal(double other) {
-        //UN-SAFETY: Accuracy not guaranteed beyond ~9~11 decimal places.
+        if (is10) return pow10(power);
 
-        //TODO: Fast track seems about neutral for performance. It might become faster if an integer pow is implemented, or it might not be worth doing (see https://github.com/Patashu/break_infinity.js/issues/4 )
-
-        //Fast track: If (this.exponent*value) is an integer and mantissa^value fits in a Number, we can do a very fast method.
-        var temp = exponent * other;
+        // FAST-TRACK: if (exponent * value) is an int and mantissa ^ value < e308,
+        // Then we can do a very fast method.
+        double temp = exponent * power;
         double newMantissa;
-        if (Math.abs(temp % 1) < Double.MIN_VALUE && Double.isFinite(temp) && Math.abs(temp) < Constants.EXP_LIMIT)
-        {
-            newMantissa = Math.pow(mantissa, other);
-            if (Double.isFinite(newMantissa))
-            {
-                return normalize(newMantissa, (long) temp);
+        if (Math.abs(temp) < 9007199254740991L && Math.floor(temp) == temp) {
+            newMantissa = Math.pow(mantissa, power);
+            if (Double.isFinite(newMantissa) && newMantissa != 0) {
+                return normalize(newMantissa, (long)temp);
             }
         }
 
-        //Same speed and usually more accurate. (An arbitrary-precision version of this calculation is used in break_break_infinity.js, sacrificing performance for utter accuracy.)
-
-        var newExponent = (long) temp;
-        var residue = temp - newExponent;
-        newMantissa = Math.pow(10, other * Math.log10(mantissa) + residue);
-        if (Double.isFinite(newMantissa))
-        {
+        long newExponent = (long) temp;
+        double residue = temp - newExponent;
+        newMantissa = Math.pow(10, power * Math.log10(mantissa) + residue);
+        if (Double.isFinite(newMantissa) && newMantissa != 0) {
             return normalize(newMantissa, newExponent);
         }
 
-        //UN-SAFETY: This should return NaN when mantissa is negative and value is noninteger.
-        var result = pow10(other * absLog10()); //this is 2x faster and gives same values AFAIK
-        if (signum() == -1 && other % 2 == 1)
-        {
+        // Dumb math time: pow10(pow * this.log10())
+        BigDouble result = BigDouble.pow10(power * this.absLog10());
+        if (sign() == -1 && power % 2 == 1) {
+            // We did NaN checking at the beginning.
             return result.neg();
         }
-
         return result;
     }
 
@@ -2151,8 +2173,7 @@ public class BigDouble implements Comparable<BigDouble> {
      * @return A string representation, with digits added or removed to reach
      * the specified number of places.
      */
-    private String toFixed(int places)
-    {
+    private String toFixed(int places) {
         if (places < 0) {
             places = Constants.MAX_SIGNIFICANT_DIGITS;
         }
@@ -2303,5 +2324,9 @@ public class BigDouble implements Comparable<BigDouble> {
     }
 
     private static class PrivateConstructorArg { }
+
+    public static void main(String[] args) {
+        System.out.println(new BigDouble(2).pow(-3000));
+    }
 
 }

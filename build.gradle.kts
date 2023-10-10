@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.ad417"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -14,6 +14,10 @@ repositories {
 dependencies {
     // Define your dependencies here
     implementation("org.jetbrains:annotations:24.0.0")
+
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("junit:junit:4.13.1")
 }
 
 tasks.test {
