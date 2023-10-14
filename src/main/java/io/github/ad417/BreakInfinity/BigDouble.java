@@ -1678,7 +1678,7 @@ public class BigDouble implements Comparable<BigDouble> {
                 Math.abs(power) < 9007199254740991L
                 && Math.floor(power) == power;
 
-        if (power < 0 && !powerIsInteger) return NaN;
+        if (mantissa < 0 && !powerIsInteger) return NaN;
 
         // FAIL-FAST: 10 ^ x can be computed quickly.
         boolean is10 = exponent == 1 && mantissa - 1 < Double.MIN_VALUE;
