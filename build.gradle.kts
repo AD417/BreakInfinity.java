@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.ad417"
-version = "0.1.1"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
@@ -55,7 +55,7 @@ publishing {
                 pom {
                     name.set("BeakInfinity")
                     description.set(
-                            "A Java port of break_infinity.js - a solution for incremental games which want to deal with very large numbers"
+                            "A Java port of break_infinity.js - a solution for incremental games which want to deal with very large numbers and prefer performance over accuracy."
                     )
                     url.set("https://github.com/AD417/BreakInfinity.java")
                     licenses {

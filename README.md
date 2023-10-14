@@ -4,12 +4,35 @@ a solution for incremental games which want to deal with very large numbers
 (bigger in magnitude than 1e308 and even `BigDecimal`'s 1e(2.14e9), up to as much as 1e(9e15) )
 and want to prioritize speed over accuracy.
 
+Disclaimer: this library is not accurate to the precision of a `double`; it merely 
+allows users to store and do math with numbers larger than `double` quickly. 
+
 ## Installation
-You can add this library to your project using Gradle:
+This library is available in the [Maven Central Repository](https://central.sonatype.com/artifact/io.github.ad417/BreakInfinity/overview), so you can include it using 
+whatever tool you like the most.
+
+Maven:
+```xml
+<dependency>
+    <groupId>io.github.ad417</groupId>
+    <artifactId>BreakInfinity</artifactId>
+    <version>0.2.0</version>
+</dependency>
+```
+
+Gradle / Groovy:
+```groovy
+dependencies {
+    //...
+    implementation 'io.github.ad417:BreakInfinity:0.2.0'
+}
+```
+
+Gradle/Kotlin:
 ```kotlin
 dependencies {
     //...
-    implementation("io.github.ad417:BreakInfinity:0.1.0")
+    implementation("io.github.ad417:BreakInfinity:0.2.0")
 }
 ```
 
