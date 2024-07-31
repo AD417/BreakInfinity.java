@@ -7,8 +7,8 @@ import java.util.Objects;
 /**
  * A BigDouble's value is simply mantissa * 10 ^ exponent.
  */
-@SuppressWarnings("unused" )
-public class BigDouble implements Comparable<BigDouble> {
+@SuppressWarnings("unused")
+public final class BigDouble extends Number implements Comparable<BigDouble> {
     private final double mantissa;
     private final long exponent;
 
@@ -29,28 +29,28 @@ public class BigDouble implements Comparable<BigDouble> {
         this.exponent = other.exponent;
     }
 
-    public BigDouble(@NotNull BigDouble other) {
-        mantissa = other.mantissa;
-        exponent = other.exponent;
-    }
-
     /**
      * Create a BigDouble from a primitive number.
      * @param value a number to convert to a BigDouble.
      */
-    public BigDouble(double value) {
-        // Java hates direct assignment to this. Fine.
+    public BigDouble(Number value) {
+        // Java hates direct assignment to "this". Fine.
         BigDouble other;
-        //SAFETY: Handle Infinity and NaN in a somewhat meaningful way.
-        if (Double.isNaN(value)) {
-            other = NaN;
-        } else if (Double.isInfinite(value)) {
-            if (value > 0) other = POSITIVE_INFINITY;
-            else other = NEGATIVE_INFINITY;
-        } else if (value == 0) {
-            other = ZERO;
+        if (value instanceof BigDouble) {
+            other = (BigDouble) value;
         } else {
-            other = normalize(value, 0);
+            double doubleValue = value.doubleValue();
+            if (Double.isNaN(doubleValue)) {
+                //SAFETY: Handle Infinity and NaN in a somewhat meaningful way.
+                other = NaN;
+            } else if (Double.isInfinite(doubleValue)) {
+                if (doubleValue > 0) other = POSITIVE_INFINITY;
+                else other = NEGATIVE_INFINITY;
+            } else if (doubleValue == 0) {
+                other = ZERO;
+            } else {
+                other = normalize(doubleValue, 0);
+            }
         }
         this.mantissa = other.mantissa;
         this.exponent = other.exponent;
@@ -2042,6 +2042,26 @@ public class BigDouble implements Comparable<BigDouble> {
         */
     }
 
+    @Override
+    public int intValue() {
+        return (int) this.toDouble();
+    }
+
+    @Override
+    public long longValue() {
+        return (long) this.toDouble();
+    }
+
+    @Override
+    public float floatValue() {
+        return (float) this.toDouble();
+    }
+
+    @Override
+    public double doubleValue() {
+        return this.toDouble();
+    }
+
     /**
      * Convert this value to a double.
      * Special cases:
@@ -2325,8 +2345,6 @@ public class BigDouble implements Comparable<BigDouble> {
 
     private static class PrivateConstructorArg { }
 
-    public static void main(String[] args) {
-        System.out.println(new BigDouble(2).pow(-3000));
-    }
+    public static void main(String[] args) {}
 
 }
