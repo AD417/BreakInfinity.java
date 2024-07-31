@@ -30,7 +30,7 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     }
 
     /**
-     * Create a BigDouble from a primitive number.
+     * Create a BigDouble from a number. Primitives may be passed.
      * @param value a number to convert to a BigDouble.
      */
     public BigDouble(Number value) {
@@ -65,8 +65,15 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         this(BigDouble.parseBigDouble(value));
     }
 
-
-    private static BigDouble parse(Object obj) {
+    /**
+     * Attempt to create a BigDouble instance from an arbitrary object. This
+     * mainly handles numbers and strings.
+     * @param obj An object to try to turn into a BigDouble.
+     * @return a BigDouble representing the value passed.
+     * If it is not possible to convert the value, an IllegalArgumentException
+     * is thrown.
+     */
+    private static BigDouble cast(Object obj) {
         if (obj instanceof BigDouble) return (BigDouble) obj;
         if (obj instanceof Number) return new BigDouble((Number) obj);
         if (obj instanceof String) return parseBigDouble((String) obj);
@@ -248,26 +255,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return A positive BigDouble with equivalent magnitude to this value.
      * @see #abs() Delegates to abs() with proper conversion.
      */
-    public static BigDouble abs(BigDouble value) {
-         return value.abs();
-    }
-    /**
-     *
-     * @param value A value to take the absolute value of.
-     * @return A positive BigDouble with equivalent magnitude to this value.
-     * @see #abs() Delegates to abs() with proper conversion.
-     */
-    public static BigDouble abs(double value) {
-        return new BigDouble(value).abs();
-    }
-    /**
-     *
-     * @param value A value to take the absolute value of.
-     * @return A positive BigDouble with equivalent magnitude to this value.
-     * @see #abs() Delegates to abs() with proper conversion.
-     */
-    public static BigDouble abs(String value) {
-        return BigDouble.parseBigDouble(value).abs();
+    public static BigDouble abs(Object value) {
+         return cast(value).abs();
     }
 
     /* TODO: The Original JS version uses a ton of typing shenanigans to avoid needing
@@ -289,26 +278,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return A negated BigDouble.
      * @see #neg() Delegates to neg() with proper conversion.
      */
-    public static BigDouble neg(BigDouble value) {
-        return value.neg();
-    }
-    /**
-     *
-     * @param value A value to negate.
-     * @return A negated BigDouble.
-     * @see #neg() Delegates to neg() with proper conversion.
-     */
-    public static BigDouble neg(double value) {
-        return new BigDouble(value).neg();
-    }
-    /**
-     *
-     * @param value A value to negate.
-     * @return A negated BigDouble.
-     * @see #neg() Delegates to neg() with proper conversion.
-     */
-    public static BigDouble neg(String value) {
-        return BigDouble.parseBigDouble(value).neg();
+    public static BigDouble neg(Object value) {
+        return cast(value).neg();
     }
     public BigDouble negate() {
         return neg();
@@ -318,25 +289,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return A negated BigDouble.
      * @see #neg() Delegates to neg()
      */
-    public static BigDouble negate(BigDouble value) {
-        return value.neg();
-    }
-    /**
-     * @param value A value to negate.
-     * @return A negated BigDouble.
-     * @see #neg() Delegates to neg() with proper conversion.
-     */
-    public static BigDouble negate(double value) {
-        return new BigDouble(value).neg();
-    }
-    /**
-     *
-     * @param value A value to negate.
-     * @return A negated BigDouble.
-     * @see #neg() Delegates to neg() with proper conversion.
-     */
-    public static BigDouble negate(String value) {
-        return BigDouble.parseBigDouble(value).neg();
+    public static BigDouble negate(Object value) {
+        return cast(value).neg();
     }
     /**
      * @return A negated BigDouble.
@@ -350,24 +304,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return A negated BigDouble.
      * @see #neg() Delegates to neg() with proper conversion.
      */
-    public static BigDouble negated(BigDouble value) {
-        return value.neg();
-    }
-    /**
-     * @param value A value to negate.
-     * @return A negated BigDouble.
-     * @see #neg() Delegates to neg() with proper conversion.
-     */
-    public static BigDouble negated(double value) {
-        return new BigDouble(value).neg();
-    }
-    /**
-     * @param value A value to negate.
-     * @return A negated BigDouble.
-     * @see #neg() Delegates to neg() with proper conversion.
-     */
-    public static BigDouble negated(String value) {
-        return BigDouble.parseBigDouble(value).neg();
+    public static BigDouble negated(Object value) {
+        return cast(value).neg();
     }
 
 
@@ -385,24 +323,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
-    public static double signum(BigDouble value) {
-        return value.signum();
-    }
-    /**
-     * @param value a value to get the sign of.
-     * @return the sign of this BigDouble.
-     * @see #signum() Delegates to signum() with proper conversion.
-     */
-    public static double signum(double value) {
-        return new BigDouble(value).signum();
-    }
-    /**
-     * @param value a value to get the sign of.
-     * @return the sign of this BigDouble.
-     * @see #signum() Delegates to signum() with proper conversion.
-     */
-    public static double signum(String value) {
-        return BigDouble.parseBigDouble(value).signum();
+    public static double signum(Object value) {
+        return cast(value).signum();
     }
     /**
      * @return the sign of this BigDouble.
@@ -416,23 +338,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
-    public static double sign(BigDouble value) {
-        return value.signum();
-    }
-    /**
-     * @return the sign of this BigDouble.
-     * @see #signum() Delegates to signum() with proper conversion.
-     */
-    public static double sign(double value) {
-        return new BigDouble(value).signum();
-    }
-    /**
-     * @param value a value to get the sign of.
-     * @return the sign of this BigDouble.
-     * @see #signum() Delegates to signum() with proper conversion.
-     */
-    public static double sign(String value) {
-        return BigDouble.parseBigDouble(value).signum();
+    public static double sign(Object value) {
+        return cast(value).signum();
     }
     /**
      * @return the sign of this BigDouble.
@@ -446,24 +353,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return the sign of this BigDouble.
      * @see #signum() Delegates to signum() with proper conversion.
      */
-    public static double sgn(BigDouble value) {
-        return value.signum();
-    }
-    /**
-     * @param value a value to get the sign of.
-     * @return the sign of this BigDouble.
-     * @see #signum() Delegates to signum() with proper conversion.
-     */
-    public static double sgn(double value) {
-        return new BigDouble(value).signum();
-    }
-    /**
-     * @param value a value to get the sign of.
-     * @return the sign of this BigDouble.
-     * @see #signum() Delegates to signum() with proper conversion.
-     */
-    public static double sgn(String value) {
-        return BigDouble.parseBigDouble(value).signum();
+    public static double sgn(Object value) {
+        return cast(value).signum();
     }
 
     /**
@@ -484,24 +375,11 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         }
         return this;
     }
-
     /**
      * @see #round() Delegates to round() with proper conversion.
      */
-    public static BigDouble round(BigDouble value) {
-        return value.round();
-    }
-    /**
-     * @see #round() Delegates to round() with proper conversion.
-     */
-    public static BigDouble round(double value) {
-        return new BigDouble(value).round();
-    }
-    /**
-     * @see #round() Delegates to round() with proper conversion.
-     */
-    public static BigDouble round(String value) {
-        return BigDouble.parseBigDouble(value).round();
+    public static BigDouble round(Object value) {
+        return cast(value).round();
     }
 
     /**
@@ -526,20 +404,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #floor() Delgates to floor() with proper conversion.
      */
-    public static BigDouble floor(BigDouble value) {
-        return value.floor();
-    }
-    /**
-     * @see #floor() Delgates to floor() with proper conversion.
-     */
-    public static BigDouble floor(double value) {
-        return new BigDouble(value).floor();
-    }
-    /**
-     * @see #floor() Delgates to floor() with proper conversion.
-     */
-    public static BigDouble floor(String value) {
-        return BigDouble.parseBigDouble(value).floor();
+    public static BigDouble floor(Object value) {
+        return cast(value).floor();
     }
 
     /**
@@ -569,20 +435,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #ceil() Delgates to ceil() with proper conversion.
      */
-    public static BigDouble ceil(BigDouble value) {
-        return value.ceil();
-    }
-    /**
-     * @see #ceil() Delgates to ceil() with proper conversion.
-     */
-    public static BigDouble ceil(double value) {
-        return new BigDouble(value).ceil();
-    }
-    /**
-     * @see #ceil() Delgates to ceil() with proper conversion.
-     */
-    public static BigDouble ceil(String value) {
-        return BigDouble.parseBigDouble(value).ceil();
+    public static BigDouble ceil(Object value) {
+        return cast(value).ceil();
     }
 
     /**
@@ -610,20 +464,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #trunc() Delegates to trunc() with proper conversion.
      */
-    public static BigDouble trunc(BigDouble value) {
-        return value.trunc();
-    }
-    /**
-     * @see #trunc() Delegates to trunc() with proper conversion.
-     */
-    public static BigDouble trunc(double value) {
-        return new BigDouble(value).trunc();
-    }
-    /**
-     * @see #trunc() Delegates to trunc() with proper conversion.
-     */
-    public static BigDouble trunc(String value) {
-        return BigDouble.parseBigDouble(value).trunc();
+    public static BigDouble trunc(Object value) {
+        return cast(value).trunc();
     }
     /**
      * @see #trunc() Delegates to trunc()
@@ -634,21 +476,11 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #trunc() Delegates to trunc() with proper conversion.
      */
-    public static BigDouble truncate(BigDouble value) {
-        return value.trunc();
+    public static BigDouble truncate(Object value) {
+        return cast(value).trunc();
     }
-    /**
-     * @see #trunc() Delegates to trunc() with proper conversion.
-     */
-    public static BigDouble truncate(double value) {
-        return new BigDouble(value).trunc();
-    }
-    /**
-     * @see #trunc() Delegates to trunc() with proper conversion.
-     */
-    public static BigDouble truncate(String value) {
-        return BigDouble.parseBigDouble(value).trunc();
-    }
+
+    // TODO: STATIC
 
     /**
      * Adds two numbers together, returning the result as a BigDouble.
@@ -657,21 +489,22 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param other a value, which may be a number, BigDouble, or valid String.
      * @return the sum of this BigDouble and the other value.
      */
-    public BigDouble add(BigDouble other) {
+    public BigDouble add(Object other) {
+        BigDouble bd = cast(other);
         if (isInfinite(this)) return this;
-        if (isInfinite(other)) return other;
+        if (isInfinite(bd)) return bd;
 
-        if (this.mantissa == 0) return other;
-        if (other.mantissa == 0) return this;
+        if (this.mantissa == 0) return bd;
+        if (bd.mantissa == 0) return this;
 
         BigDouble bigger, smaller;
 
-        if (this.exponent > other.exponent) {
+        if (this.exponent > bd.exponent) {
             bigger = this;
-            smaller = other;
+            smaller = bd;
         } else {
             // Not always true, but in such a case they're close enough that it doesn't matter.
-            bigger = other;
+            bigger = bd;
             smaller = this;
         }
 
@@ -687,37 +520,14 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         );
         return new BigDouble(mantissa, bigger.exponent - 14);
     }
-
     /**
-     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
+     * @see #add(Object) Delegates to add(BigDouble other)
      */
-    public BigDouble add(double other) {
-        return this.add(new BigDouble(other));
-    }
-    /**
-     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
-     */
-    public BigDouble add(String other) {
-        return this.add(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #add(BigDouble) Delegates to add(BigDouble other)
-     */
-    public BigDouble plus(BigDouble other) {
+    public BigDouble plus(Object other) {
         return add(other);
     }
-    /**
-     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
-     */
-    public BigDouble plus(double other) {
-        return this.plus(new BigDouble(other));
-    }
-    /**
-     * @see #add(BigDouble) Delegates to add(BigDouble other) with proper conversion.
-     */
-    public BigDouble plus(String other) {
-        return this.plus(BigDouble.parseBigDouble(other));
-    }
+
+    // TODO: STATIC
 
     /**
      * Subtracts the provided value from this BigDouble, returning the result as a BigDouble.
@@ -726,57 +536,23 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param other a value to subtract, which may be a number, BigDouble, or valid String.
      * @return the difference of this BigDouble and the other value.
      */
-    public BigDouble sub(BigDouble other) {
-        return add(other.neg());
+    public BigDouble sub(Object other) {
+        return add(cast(other).neg());
     }
     /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     * @see #sub(Object) Delegates to sub(BigDouble other)
      */
-    public BigDouble sub(double other) {
-        return this.sub(new BigDouble(other));
-    }
-    /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
-     */
-    public BigDouble sub(String other) {
-        return this.sub(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other)
-     */
-    public BigDouble subtract(BigDouble other) {
+    public BigDouble subtract(Object other) {
         return sub(other);
     }
     /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
+     * @see #sub(Object) Delegates to sub(BigDouble other)
      */
-    public BigDouble subtract(double other) {
-        return this.subtract(new BigDouble(other));
-    }
-    /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
-     */
-    public BigDouble subtract(String other) {
-        return this.subtract(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other)
-     */
-    public BigDouble minus(BigDouble other) {
+    public BigDouble minus(Object other) {
         return sub(other);
     }
-    /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
-     */
-    public BigDouble minus(double other) {
-        return this.minus(new BigDouble(other));
-    }
-    /**
-     * @see #sub(BigDouble) Delegates to sub(BigDouble other) with proper conversion.
-     */
-    public BigDouble minus(String other) {
-        return this.minus(BigDouble.parseBigDouble(other));
-    }
+
+    // TODO: STATIC
 
     /**
      * Multiply two numbers together, returning the result as a BigDouble.
@@ -785,60 +561,27 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param other a value to multiply, which may be a number, BigDouble, or valid String.
      * @return the product of this BigDouble and the other value.
      */
-    public BigDouble mul(BigDouble other) {
+    public BigDouble mul(Object other) {
+        BigDouble bd = cast(other);
         return normalize(
-                this.mantissa * other.mantissa,
-                this.exponent + other.exponent
+                this.mantissa * bd.mantissa,
+                this.exponent + bd.exponent
         );
     }
     /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     * @see #mul(Object) Delegates to mul(BigDouble other).
      */
-    public BigDouble mul(double other) {
-        return this.mul(new BigDouble(other));
-    }
-    /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
-     */
-    public BigDouble mul(String other) {
-        return this.mul(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other).
-     */
-    public BigDouble multiply(BigDouble other) {
+    public BigDouble multiply(Object other) {
         return mul(other);
     }
     /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
+     * @see #mul(Object) Delegates to mul(BigDouble other)
      */
-    public BigDouble multiply(double other) {
-        return this.multiply(new BigDouble(other));
-    }
-    /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
-     */
-    public BigDouble multiply(String other) {
-        return this.multiply(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other)
-     */
-    public BigDouble times(BigDouble other) {
+    public BigDouble times(Object other) {
         return mul(other);
     }
-    /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
-     */
-    public BigDouble times(double other) {
-        return this.times(new BigDouble(other));
-    }
-    /**
-     * @see #mul(BigDouble) Delegates to mul(BigDouble other) with proper conversion.
-     */
-    public BigDouble times(String other) {
-        return this.times(BigDouble.parseBigDouble(other));
-    }
+
+    // TODO: STATICS
 
     /**
      * Divides this BigDouble by the provided value, returning the result as a BigDouble.
@@ -848,75 +591,27 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param other a value to subtract, which may be a number, BigDouble, or valid String.
      * @return the quotient of this BigDouble and the other value.
      */
-    public BigDouble div(BigDouble other) {
-        return mul(other.recip());
+    public BigDouble div(Object other) {
+        return mul(cast(other).recip());
     }
     /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
+     * @see #div(Object) Delegates to div(BigDouble other).
      */
-    public BigDouble div(double other) {
-        return this.div(new BigDouble(other));
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
-     */
-    public BigDouble div(String other) {
-        return this.div(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other).
-     */
-    public BigDouble divide(BigDouble other) {
+    public BigDouble divide(Object other) {
         return div(other);
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
-     */
-    public BigDouble divide(double other) {
-        return this.divide(new BigDouble(other));
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
-     */
-    public BigDouble divide(String other) {
-        return this.divide(BigDouble.parseBigDouble(other));
     }
     // NOTE: If we do add in all the things, divideBy and dividedBy don't get statics.
     /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other)
+     * @see #div(Object) Delegates to div(BigDouble other)
      */
-    public BigDouble divideBy(BigDouble other) {
+    public BigDouble divideBy(Object other) {
         return div(other);
     }
     /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other)
+     * @see #div(Object) Delegates to div(BigDouble other).
      */
-    public BigDouble divideBy(double other) {
-        return this.divideBy(new BigDouble(other));
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
-     */
-    public BigDouble divideBy(String other) {
-        return this.divideBy(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other).
-     */
-    public BigDouble dividedBy(BigDouble other) {
+    public BigDouble dividedBy(Object other) {
         return div(other);
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
-     */
-    public BigDouble dividedBy(double other) {
-        return this.dividedBy(new BigDouble(other));
-    }
-    /**
-     * @see #div(BigDouble) Delegates to div(BigDouble other) with proper conversion.
-     */
-    public BigDouble dividedBy(String other) {
-        return this.dividedBy(BigDouble.parseBigDouble(other));
     }
 
     /**
@@ -931,14 +626,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #recip() Delegates to recip() with proper conversion.
      */
-    public static BigDouble recip(double value) {
-        return new BigDouble(value).recip();
-    }
-    /**
-     * @see #recip() Delegates to recip() with proper conversion.
-     */
-    public static BigDouble recip(String value) {
-        return BigDouble.parseBigDouble(value).recip();
+    public static BigDouble recip(Object value) {
+        return cast(value).recip();
     }
     /**
      * @see #recip() Delegates to recip().
@@ -949,14 +638,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #recip() Delegates to recip() with proper conversion.
      */
-    public static BigDouble reciprocal(double value) {
-        return new BigDouble(value).reciprocal();
-    }
-    /**
-     * @see #recip() Delegates to recip() with proper conversion.
-     */
-    public static BigDouble reciprocal(String value) {
-        return BigDouble.parseBigDouble(value).reciprocal();
+    public static BigDouble reciprocal(Object value) {
+        return cast(value).reciprocal();
     }
     /**
      * @see #recip() Delegates to recip().
@@ -967,14 +650,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #recip() Delegates to recip() with proper conversion.
      */
-    public static BigDouble reciprocate(double value) {
-        return new BigDouble(value).reciprocate();
-    }
-    /**
-     * @see #recip() Delegates to recip() with proper conversion.
-     */
-    public static BigDouble reciprocate(String value) {
-        return BigDouble.parseBigDouble(value).reciprocate();
+    public static BigDouble reciprocate(Object value) {
+        return cast(value).reciprocate();
     }
 
     @Override
@@ -1007,8 +684,9 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         if (this.exponent < other.exponent) return -1;
         return Double.compare(this.mantissa, other.mantissa);
     }
-    public int cmp(BigDouble other) {
-        return compareTo(other);
+
+    public int cmp(Object other) {
+        return compareTo(cast(other));
     }
 
     @Override
@@ -1029,12 +707,17 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         return equals((BigDouble) obj);
     }
 
+    // Due to object shenanigans with equals(Object), we have to do this one
+    // the old way.
+
     /**
      * Determine if two BigDouble values are exactly equal to each other.
-     * Two BigDoubles are equivalent if and only if both their mantissa and exponent are the same.
+     * Two BigDoubles are equivalent if and only if both their mantissa and
+     * exponent are the same.
      * @param other The other value to compare. Can be a String, Double, or BigDouble,
      *              and will be converted appropriately.
-     * @return
+     * @return true if the numerical values of both BigDoubles are equal; false
+     * otherwise.
      */
     public boolean equals(BigDouble other) {
         return this.exponent == other.exponent && this.mantissa == other.mantissa;
@@ -1052,101 +735,40 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         return this.equals(BigDouble.parseBigDouble(other));
     }
     /**
-     * @see #equals(BigDouble) Delegates to equals(BigDouble).
+     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion
      */
-    public boolean eq(BigDouble other) {
-        return equals(other);
-    }
-    /**
-     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion.
-     */
-    public boolean eq(double other) {
-        return this.eq(new BigDouble(other));
-    }
-    /**
-     * @see #equals(BigDouble) Delegates to equals(BigDouble) with proper conversion.
-     */
-    public boolean eq(String other) {
-        return this.eq(BigDouble.parseBigDouble(other));
+    public boolean eq(Object other) {
+        return equals(cast(other));
     }
 
-
     /**
-     * @see #equals(BigDouble) Returns the opposite of equals(BigDouble).
+     * Returns the opposite of equals().
+     * @see #equals(BigDouble)
      */
-    public boolean neq(BigDouble other) {
-        return !equals(other);
+    public boolean neq(Object other) {
+        return !equals(cast(other));
     }
     /**
-     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
-     */
-    public boolean neq(double other) {
-        return this.neq(new BigDouble(other));
-    }
-    /**
-     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
-     */
-    public boolean neq(String other) {
-        return this.neq(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #neq(BigDouble) Delegates to neq(BigDouble).
+     * @see #neq(Object) Delegates to neq(BigDouble).
      */
     public boolean notEquals(BigDouble other) {
         return !equals(other);
     }
-    /**
-     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
-     */
-    public boolean notEquals(double other) {
-        return this.notEquals(new BigDouble(other));
-    }
-    /**
-     * @see #neq(BigDouble) Delegates to neq(BigDouble) with proper conversion.
-     */
-    public boolean notEquals(String other) {
-        return this.notEquals(BigDouble.parseBigDouble(other));
-    }
 
-    // NOTE: maybe I could get away with the extant CompareTo method doing the work for me.
     /**
      * Determine if this BigDouble is less than the provided value.
      * @param other The other value to compare. Can be a String, Double, or BigDouble,
      *              and will be converted appropriately.
      * @return true if and only if this BigDouble is less than the provided value, false otherwise.
      */
-    public boolean lt(BigDouble other) {
-        return compareTo(other) < 0;
+    public boolean lt(Object other) {
+        return compareTo(cast(other)) < 0;
     }
     /**
-     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
+     * @see #lt(Object) Delegates to lt(BigDouble).
      */
-    public boolean lt(double other) {
-        return this.lt(new BigDouble(other));
-    }
-    /**
-     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
-     */
-    public boolean lt(String other) {
-        return this.lt(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #lt(BigDouble) Delegates to lt(BigDouble).
-     */
-    public boolean lessThan(BigDouble other) {
+    public boolean lessThan(Object other) {
         return lt(other);
-    }
-    /**
-     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
-     */
-    public boolean lessThan(double other) {
-        return this.lessThan(new BigDouble(other));
-    }
-    /**
-     * @see #lt(BigDouble) Delegates to lt(BigDouble) with proper conversion.
-     */
-    public boolean lessThan(String other) {
-        return this.lessThan(BigDouble.parseBigDouble(other));
     }
 
     /**
@@ -1156,38 +778,14 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return true if and only if this BigDouble is less than or equal to
      * the provided value, false otherwise.
      */
-    public boolean lte(BigDouble other) {
-        return compareTo(other) <= 0;
+    public boolean lte(Object other) {
+        return compareTo(cast(other)) <= 0;
     }
     /**
-     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
+     * @see #lte(Object) Delegates to lte(BigDouble).
      */
-    public boolean lte(double other) {
-        return this.lte(new BigDouble(other));
-    }
-    /**
-     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
-     */
-    public boolean lte(String other) {
-        return this.lte(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #lte(BigDouble) Delegates to lte(BigDouble).
-     */
-    public boolean lessThanOrEqualTo(BigDouble other) {
+    public boolean lessThanOrEqualTo(Object other) {
         return lte(other);
-    }
-    /**
-     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
-     */
-    public boolean lessThanOrEqualTo(double other) {
-        return this.lessThanOrEqualTo(new BigDouble(other));
-    }
-    /**
-     * @see #lte(BigDouble) Delegates to lte(BigDouble) with proper conversion.
-     */
-    public boolean lessThanOrEqualTo(String other) {
-        return this.lessThanOrEqualTo(BigDouble.parseBigDouble(other));
     }
 
     /**
@@ -1197,38 +795,14 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return true if and only if this BigDouble is greater than the provided value,
      * false otherwise.
      */
-    public boolean gt(BigDouble other) {
-        return compareTo(other) > 0;
+    public boolean gt(Object other) {
+        return compareTo(cast(other)) > 0;
     }
     /**
-     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
+     * @see #gt(Object) Delegates to gt().
      */
-    public boolean gt(double other) {
-        return this.gt(new BigDouble(other));
-    }
-    /**
-     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
-     */
-    public boolean gt(String other) {
-        return this.gt(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #gt(BigDouble) Delegates to gt(BigDouble).
-     */
-    public boolean greaterThan(BigDouble other) {
+    public boolean greaterThan(Object other) {
         return gt(other);
-    }
-    /**
-     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
-     */
-    public boolean greaterThan(double other) {
-        return this.greaterThan(new BigDouble(other));
-    }
-    /**
-     * @see #gt(BigDouble) Delegates to gt(BigDouble) with proper conversion.
-     */
-    public boolean greaterThan(String other) {
-        return this.greaterThan(BigDouble.parseBigDouble(other));
     }
 
     /**
@@ -1238,38 +812,14 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @return true if and only if this BigDouble is greater than or equal to
      * the provided value, false otherwise.
      */
-    public boolean gte(BigDouble other) {
-        return compareTo(other) >= 0;
+    public boolean gte(Object other) {
+        return compareTo(cast(other)) >= 0;
     }
     /**
-     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
+     * @see #gte(Object) Delegates to gte(BigDouble).
      */
-    public boolean gte(double other) {
-        return this.gte(new BigDouble(other));
-    }
-    /**
-     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
-     */
-    public boolean gte(String other) {
-        return this.gte(BigDouble.parseBigDouble(other));
-    }
-    /**
-     * @see #gte(BigDouble) Delegates to gte(BigDouble).
-     */
-    public boolean greaterThanOrEqualTo(BigDouble other) {
+    public boolean greaterThanOrEqualTo(Object other) {
         return gte(other);
-    }
-    /**
-     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
-     */
-    public boolean greaterThanOrEqualTo(double other) {
-        return this.greaterThanOrEqualTo(new BigDouble(other));
-    }
-    /**
-     * @see #gte(BigDouble) Delegates to gte(BigDouble) with proper conversion.
-     */
-    public boolean greaterThanOrEqualTo(String other) {
-        return this.greaterThanOrEqualTo(BigDouble.parseBigDouble(other));
     }
 
     /**
@@ -1278,20 +828,9 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      *              or BigDouble, and will be converted appropriately.
      * @return The greater value, as a BigDouble.
      */
-    public BigDouble max(BigDouble other) {
-        return compareTo(other) > 0 ? this : other;
-    }
-    /**
-     * @see #max(BigDouble) Delegates to max(BigDouble) with proper conversion.
-     */
-    public BigDouble max(double other) {
-        return this.max(new BigDouble(other));
-    }
-    /**
-     * @see #max(BigDouble) Delegates to max(BigDouble) with proper conversion.
-     */
-    public BigDouble max(String other) {
-        return this.max(BigDouble.parseBigDouble(other));
+    public BigDouble max(Object other) {
+        BigDouble bd = cast(other);
+        return compareTo(bd) > 0 ? this : bd;
     }
 
     /**
@@ -1300,20 +839,9 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      *              or BigDouble, and will be converted appropriately.
      * @return The smaller value, as a BigDouble.
      */
-    public BigDouble min(BigDouble other) {
-        return compareTo(other) < 0 ? this : other;
-    }
-    /**
-     * @see #min(BigDouble) Delegates to min(BigDouble) with proper conversion.
-     */
-    public BigDouble min(double other) {
-        return this.min(new BigDouble(other));
-    }
-    /**
-     * @see #min(BigDouble) Delegates to min(BigDouble) with proper conversion.
-     */
-    public BigDouble min(String other) {
-        return this.min(BigDouble.parseBigDouble(other));
+    public BigDouble min(Object other) {
+        BigDouble bd = cast(other);
+        return compareTo(bd) < 0 ? this : bd;
     }
 
     /**
@@ -1323,8 +851,16 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param higher The upper bound that this BigDouble may be.
      * @return This BigDouble value, unless outside the bounds defined by lower and higher.
      */
-    public BigDouble clamp(BigDouble lower, BigDouble higher) {
-        return max(lower).min(higher);
+    public BigDouble clamp(Object lower, Object higher) {
+        BigDouble low = cast(lower), high = cast(higher);
+        // Technically this means the bounds can be in whatever order.
+        // You can't expect this all the time.
+        if (low.gt(high)) {
+            BigDouble tmp = low;
+            low = high;
+            high = tmp;
+        }
+        return max(low).min(high);
     }
 
     /**
@@ -1332,7 +868,7 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param other A lower bound that this BigDouble should be above.
      * @return This BigDouble, unless less than "other", in which case "other" is returned.
      */
-    public BigDouble clampMin(BigDouble other) {
+    public BigDouble clampMin(Object other) {
         return max(other);
     }
 
@@ -1341,21 +877,28 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param other An upper bound that this BigDouble should be below.
      * @return This BigDouble, unless greater than "other", in which case "other" is returned.
      */
-    public BigDouble clampMax(BigDouble other) {
+    public BigDouble clampMax(Object other) {
         return min(other);
     }
 
-    // It's operators like this one that make me realize how much of a pain it will be
-    // to properly overload everything later. 9 methods each.
-
-
-    public int cmp_tolerance(BigDouble other, BigDouble tolerance) {
+    /**
+     * Compare this value with another value, with the assumption that if they
+     * are within some amount, they are effectively equal.
+     * @param other The value to compare this BigDouble with.
+     *              Must be a BigDouble, number, or formatted String.
+     * @param tolerance How close the values must be before we can say they are
+     *                  equal.
+     * @return 0 if the two are within tolerance of each other;
+     * follows {@link #compareTo(BigDouble)} otherwise.
+     */
+    public int cmp_tolerance(Object other, Object tolerance) {
         return eq_tolerance(other, tolerance) ? 0 : cmp(other);
     }
     /**
-     * @see #cmp_tolerance(BigDouble, BigDouble)  Delegates to cmp_tolerance(BigDouble, BigDouble).
+     * @see #cmp_tolerance(Object, Object)
+     * Delegates to cmp_tolerance(BigDouble, BigDouble).
      */
-    public int compare_tolerance(BigDouble other, BigDouble tolerance) {
+    public int compare_tolerance(Object other, Object tolerance) {
         return cmp_tolerance(other, tolerance);
     }
 
@@ -1367,39 +910,41 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * @param tolerance The maximum amount that the values can differ by while being equivalent.
      * @return Whether the values are within tolerance of each other.
      */
-    public boolean eq_tolerance(BigDouble other, BigDouble tolerance) {
-        return sub(other).abs().lte(
-                this.abs().max(other.abs()).mul(tolerance)
+    public boolean eq_tolerance(Object other, Object tolerance) {
+        BigDouble bd = cast(other);
+        BigDouble tol = cast(tolerance);
+        return sub(bd).abs().lte(
+                this.abs().max(bd.abs()).mul(tol)
         );
     }
 
     /**
-     * @see #eq_tolerance(BigDouble, BigDouble)   Delegates to eq_tolerance(BigDouble, BigDouble).
+     * @see #eq_tolerance(Object, Object)   Delegates to eq_tolerance(BigDouble, BigDouble).
      */
-    public boolean equals_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean equals_tolerance(Object other, Object tolerance) {
         return eq_tolerance(other, tolerance);
     }
 
-    public boolean neq_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean neq_tolerance(Object other, Object tolerance) {
         return !eq_tolerance(other, tolerance);
     }
-    public boolean notEquals_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean notEquals_tolerance(Object other, Object tolerance) {
         return neq_tolerance(other, tolerance);
     }
 
-    public boolean lt_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean lt_tolerance(Object other, Object tolerance) {
         return !eq_tolerance(other, tolerance) && lt(other);
     }
 
-    public boolean lte_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean lte_tolerance(Object other, Object tolerance) {
         return eq_tolerance(other, tolerance) || lt(other);
     }
 
-    public boolean gt_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean gt_tolerance(Object other, Object tolerance) {
         return !eq_tolerance(other, tolerance) && gt(other);
     }
 
-    public boolean gte_tolerance(BigDouble other, BigDouble tolerance) {
+    public boolean gte_tolerance(Object other, Object tolerance) {
         return eq_tolerance(other, tolerance) || gt(other);
     }
 
@@ -1424,22 +969,10 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     }
 
     /**
-     * @see #log10() Delegates to log10().
-     */
-    public static double log10(BigDouble value) {
-        return value.log10();
-    }
-    /**
      * @see #log10() Delegates to log10() with proper conversion.
      */
-    public static double log10(double value) {
-        return new BigDouble(value).log10();
-    }
-    /**
-     * @see #log10() Delegates to log10() with proper conversion.
-     */
-    public static double log10(String value) {
-        return BigDouble.parseBigDouble(value).log10();
+    public static double log10(Object value) {
+        return cast(value).log10();
     }
 
     /**
@@ -1459,20 +992,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #absLog10()  Delegates to absLog10().
      */
-    public static double absLog10(BigDouble value) {
-        return value.absLog10();
-    }
-    /**
-     * @see #absLog10()  Delegates to absLog10() with proper conversion.
-     */
-    public static double absLog10(double value) {
-        return new BigDouble(value).absLog10();
-    }
-    /**
-     * @see #absLog10()  Delegates to absLog10() with proper conversion.
-     */
-    public static double absLog10(String value) {
-        return BigDouble.parseBigDouble(value).absLog10();
+    public static double absLog10(Object value) {
+        return cast(value).absLog10();
     }
 
     /**
@@ -1496,20 +1017,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #pLog10()  Delegates to pLog10().
      */
-    public static double pLog10(BigDouble value) {
-        return value.pLog10();
-    }
-    /**
-     * @see #pLog10()  Delegates to pLog10() with proper conversion.
-     */
-    public static double pLog10(double value) {
-        return new BigDouble(value).pLog10();
-    }
-    /**
-     * @see #pLog10()  Delegates to pLog10() with proper conversion.
-     */
-    public static double pLog10(String value) {
-        return BigDouble.parseBigDouble(value).pLog10();
+    public static double pLog10(Object value) {
+        return cast(value).pLog10();
     }
 
     /**
@@ -1540,8 +1049,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #log()  Delegates to log() with proper conversion.
      */
-    public static double logarithm(BigDouble value) {
-        return value.logarithm();
+    public static double logarithm(Object value) {
+        return cast(value).logarithm();
     }
 
     /**
@@ -1569,7 +1078,7 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         // We assume this to be true and thus only need to return a number, not a Decimal,
         // and don't do any other kind of error checking.
 
-        // Also, Math.LN10 = 2.302585092994046
+        // Also, Math.LN10 = 2.302585092994046. Dammit Java...
         return 2.302585092994046 / Math.log(base) * log10();
     }
     /**
@@ -1608,20 +1117,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #log()  Delegates to log() with proper conversion.
      */
-    public static double ln(BigDouble value) {
-        return value.ln();
-    }
-    /**
-     * @see #log()  Delegates to log() with proper conversion.
-     */
-    public static double ln(double value) {
-        return new BigDouble(value).ln();
-    }
-    /**
-     * @see #log()  Delegates to log() with proper conversion.
-     */
-    public static double ln(String value) {
-        return BigDouble.parseBigDouble(value).ln();
+    public static double ln(Object value) {
+        return cast(value).ln();
     }
 
     /**
@@ -1658,11 +1155,11 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #pow(double)  Delegates to pow(double) with proper conversion.
      */
-    public BigDouble pow(BigDouble power) {
+    public BigDouble pow(Object power) {
         // UN-SAFETY: if power > Double.MAX_VALUE,
         // anything raised to it is either 0 or infinite.
 
-        return pow(power.toDouble());
+        return pow(cast(power).toDouble());
     }
 
     /**
@@ -1741,20 +1238,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #exp()  Delegates to exp() with proper conversion.
      */
-    public static BigDouble exp(BigDouble value) {
-        return value.exp();
-    }
-    /**
-     * @see #exp()  Delegates to exp() with proper conversion.
-     */
-    public static BigDouble exp(double value) {
-        return new BigDouble(value).exp();
-    }
-    /**
-     * @see #exp()  Delegates to exp() with proper conversion.
-     */
-    public static BigDouble exp(String value) {
-        return BigDouble.parseBigDouble(value).exp();
+    public static BigDouble exp(Object value) {
+        return cast(value).exp();
     }
 
     /**
@@ -1767,25 +1252,12 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #sqr()  Delegates to sqr() with proper conversion.
      */
-    public static BigDouble sqr(BigDouble value) {
-        return value.sqr();
-    }
-    /**
-     * @see #sqr()  Delegates to sqr() with proper conversion.
-     */
-    public static BigDouble sqr(double value) {
-        return new BigDouble(value).sqr();
-    }
-    /**
-     * @see #sqr()  Delegates to sqr() with proper conversion.
-     */
-    public static BigDouble sqr(String value) {
-        return BigDouble.parseBigDouble(value).sqr();
+    public static BigDouble sqr(Object value) {
+        return cast(value).sqr();
     }
 
     /**
-     * Returns the correctly rounded positive square root of this
-     * BigDouble value.
+     * Returns the positive square root of this BigDouble value.
      * <p>Special cases:
      * <ul><li>If the argument is NaN or less than zero, then the result
      * is NaN.
@@ -1813,20 +1285,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #sqrt()  Delegates to sqrt() with proper conversion.
      */
-    public static BigDouble sqrt(BigDouble value) {
-        return value.sqrt();
-    }
-    /**
-     * @see #sqrt()  Delegates to sqrt() with proper conversion.
-     */
-    public static BigDouble sqrt(double value) {
-        return new BigDouble(Math.sqrt(value));
-    }
-    /**
-     * @see #sqrt()  Delegates to sqrt() with proper conversion.
-     */
-    public static BigDouble sqrt(String value) {
-        return BigDouble.parseBigDouble(value).sqrt();
+    public static BigDouble sqrt(Object value) {
+        return cast(value).sqrt();
     }
 
     /**
@@ -1843,20 +1303,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #cube()  Delegates to cube() with proper conversion.
      */
-    public static BigDouble cube(BigDouble value) {
-        return value.cube();
-    }
-    /**
-     * @see #cube()  Delegates to cube() with proper conversion.
-     */
-    public static BigDouble cube(double value) {
-        return new BigDouble(value).cube();
-    }
-    /**
-     * @see #cube()  Delegates to cube() with proper conversion.
-     */
-    public static BigDouble cube(String value) {
-        return BigDouble.parseBigDouble(value).cube();
+    public static BigDouble cube(Object value) {
+        return cast(value).cube();
     }
 
     /**
@@ -1901,20 +1349,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     /**
      * @see #cbrt()  Delegates to cbrt() with proper conversion.
      */
-    public static BigDouble cbrt(BigDouble value) {
-        return value.cbrt();
-    }
-    /**
-     * @see #cbrt()  Delegates to cbrt() with proper conversion.
-     */
-    public static BigDouble cbrt(double value) {
-        return new BigDouble(Math.cbrt(value));
-    }
-    /**
-     * @see #cbrt()  Delegates to cbrt() with proper conversion.
-     */
-    public static BigDouble cbrt(String value) {
-        return BigDouble.parseBigDouble(value).cbrt();
+    public static BigDouble cbrt(Object value) {
+        return cast(value).cbrt();
     }
 
     /**
@@ -1924,31 +1360,21 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * Adapted from Trimps source code.
      */
     public static BigDouble affordGeometricSeries(
-            // Thanks, I hate that this has 4
-            BigDouble resourcesAvailable,
-            BigDouble priceStart,
-            BigDouble priceRatio,
+            Object resourcesAvailable,
+            Object priceStart,
+            Object priceRatio,
             long currentOwned
     ) {
-        BigDouble actualStart = priceStart.mul(priceRatio.pow(currentOwned));
+        BigDouble avail = cast(resourcesAvailable);
+        BigDouble start = cast(priceStart);
+        BigDouble ratio = cast(priceRatio);
+
+        BigDouble actualStart = start.mul(ratio.pow(currentOwned));
 
         return new BigDouble(Math.floor(
-                resourcesAvailable.div(actualStart).mul(priceRatio.sub(ONE)).add(ONE).log10()
-                / priceRatio.log10()
+                avail.div(actualStart).mul(ratio.sub(ONE)).add(ONE).log10()
+                / ratio.log10()
         ));
-    }
-    public static BigDouble affordGeometricSeries(
-            BigDouble resourcesAvailable,
-            double priceStart,
-            double priceRatio,
-            long currentOwned
-    ) {
-        return affordGeometricSeries(
-                resourcesAvailable,
-                new BigDouble(priceStart),
-                new BigDouble(priceRatio),
-                currentOwned
-        );
     }
 
     /**
@@ -1957,14 +1383,15 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      */
     public static BigDouble sumGeometricSeries(
             int numItems,
-            BigDouble priceStart,
-            BigDouble priceRatio,
+            Object priceStart,
+            Object priceRatio,
             int currentOwned
     ) {
-        return priceStart
-                .mul(priceRatio.pow(currentOwned))
-                .mul(ONE.sub(priceRatio.pow(numItems)))
-                .div(ONE.sub(priceRatio));
+        BigDouble ratio = cast(priceRatio);
+        return cast(priceStart)
+                .mul(ratio.pow(currentOwned))
+                .mul(ONE.sub(ratio.pow(numItems)))
+                .div(ONE.sub(ratio));
     }
 
     /**
@@ -1973,18 +1400,22 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * how much of it can you buy?
      */
     public static BigDouble affordArithmeticSeries(
-            BigDouble resourcesAvailable,
-            BigDouble priceStart,
-            BigDouble priceAdd,
+            Object resourcesAvailable,
+            Object priceStart,
+            Object priceAdd,
             int currentOwned
     ) {
-        BigDouble actualStart = priceStart.add(priceAdd.mul(currentOwned));
-        BigDouble b = actualStart.sub(priceAdd.div(2));
+        BigDouble avail = cast(resourcesAvailable);
+        BigDouble start = cast(priceStart);
+        BigDouble add = cast(priceAdd);
+
+        BigDouble actualStart = start.add(add.mul(currentOwned));
+        BigDouble b = actualStart.sub(add.div(2));
         BigDouble b2 = b.pow(2);
 
         return b.neg()
-                .add(b2.add(priceAdd.mul(resourcesAvailable).mul(2)).sqrt())
-                .div(priceAdd)
+                .add(b2.add(add.mul(avail).mul(2)).sqrt())
+                .div(add)
                 .floor();
     }
 
@@ -1995,17 +1426,19 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      */
     public static BigDouble sumArithmeticSeries(
             int numItems,
-            BigDouble priceStart,
-            BigDouble priceAdd,
+            Object priceStart,
+            Object priceAdd,
             int currentOwned
     ) {
-        BigDouble actualStart = priceStart.add(priceAdd.mul(currentOwned));
+        BigDouble start = cast(priceStart);
+        BigDouble add = cast(priceAdd);
+        BigDouble actualStart = start.add(add.mul(currentOwned));
 
         // (n/2)*(2*a+(n-1)*d)
         // numItems
         return new BigDouble(numItems)
                 .div(2)
-                .mul(actualStart.mul(2).plus(new BigDouble(numItems).sub(ONE).mul(priceAdd)));
+                .mul(actualStart.mul(2).plus(new BigDouble(numItems).sub(ONE).mul(add)));
     }
 
     /**
@@ -2015,9 +1448,10 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * <a href="http://cookieclicker.wikia.com/wiki/Frozen_Cookies_(JavaScript_Add-on)#Efficiency.3F_What.27s_that.3F">...</a>
      */
     public static BigDouble efficiencyOfPurchase(
-            BigDouble cost, BigDouble currentRpS, BigDouble deltaRpS
+            Object cost, Object currentRpS, Object deltaRpS
     ) {
-        return cost.div(currentRpS).add(cost.div(deltaRpS));
+        BigDouble bdCost = cast(cost);
+        return bdCost.div(currentRpS).add(bdCost.div(deltaRpS));
     }
 
     private static BigDouble randomDecimalForTesting(long absMaxExponent) {
@@ -2172,7 +1606,8 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
      * Return a string representation of this BigDecimal, forcefully
      * formatted in scientific notation (X.XXeYYY, for some values X.XX and Y)
      * @param places The number of places in the mantissa.
-     * @return
+     * @return a String representation of this BigDouble with the requested
+     * number of places in the mantissa.
      */
     public String toExponential(int places) {
         if (isInfinite(this)) return Double.toString(mantissa);
@@ -2257,80 +1692,44 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     public BigDouble sinh() {
         return this.exp().sub(this.neg().exp()).div(2);
     }
-    public static BigDouble sinh(BigDouble value) {
-        return value.sinh();
-    }
-    public static BigDouble sinh(double value) {
-        return new BigDouble(value).sinh();
-    }
-    public static BigDouble sinh(String value) {
-        return BigDouble.parseBigDouble(value).sinh();
+    public static BigDouble sinh(Object value) {
+        return cast(value).sinh();
     }
 
     public BigDouble cosh() {
         return this.exp().add(this.neg().exp()).div(2);
     }
-    public static BigDouble cosh(BigDouble value) {
-        return value.cosh();
-    }
-    public static BigDouble cosh(double value) {
-        return new BigDouble(value).cosh();
-    }
-    public static BigDouble cosh(String value) {
-        return BigDouble.parseBigDouble(value).cosh();
+    public static BigDouble cosh(Object value) {
+        return cast(value).cosh();
     }
 
     public BigDouble tanh() {
         return sinh().div(cosh());
     }
-    public static BigDouble tanh(BigDouble value) {
-        return value.tanh();
-    }
-    public static BigDouble tanh(double value) {
-        return new BigDouble(value).tanh();
-    }
-    public static BigDouble tanh(String value) {
-        return BigDouble.parseBigDouble(value).tanh();
+    public static BigDouble tanh(Object value) {
+        return cast(value).tanh();
     }
 
     public double asinh() {
         return ln(this.add(sqr().add(ONE).sqrt()));
     }
-    public static double asinh(BigDouble value) {
-        return value.asinh();
-    }
-    public static double asinh(double value) {
-        return new BigDouble(value).asinh();
-    }
-    public static double asinh(String value) {
-        return BigDouble.parseBigDouble(value).asinh();
+    public static double asinh(Object value) {
+        return cast(value).asinh();
     }
 
     public double acosh() {
         return add(ONE).div(ONE.sub(this)).ln() / 2;
     }
-    public static double acosh(BigDouble value) {
-        return value.acosh();
-    }
-    public static double acosh(double value) {
-        return new BigDouble(value).acosh();
-    }
-    public static double acosh(String value) {
-        return BigDouble.parseBigDouble(value).acosh();
+    public static double acosh(Object value) {
+        return cast(value).acosh();
     }
 
     public double atanh() {
         if (this.abs().gte(1)) return Double.NaN;
         return ln(this.add(1).div(ONE.sub(this))) / 2;
     }
-    public static double atanh(BigDouble value) {
-        return value.atanh();
-    }
-    public static double atanh(double value) {
-        return new BigDouble(value).atanh();
-    }
-    public static double atanh(String value) {
-        return BigDouble.parseBigDouble(value).atanh();
+    public static double atanh(Object value) {
+        return cast(value).atanh();
     }
 
     /**
@@ -2354,5 +1753,5 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     }
 
     private static class PrivateConstructorArg { }
-    
+
 }
