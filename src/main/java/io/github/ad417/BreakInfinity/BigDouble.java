@@ -65,6 +65,16 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
         this(BigDouble.parseBigDouble(value));
     }
 
+
+    private static BigDouble parse(Object obj) {
+        if (obj instanceof BigDouble) return (BigDouble) obj;
+        if (obj instanceof Number) return new BigDouble((Number) obj);
+        if (obj instanceof String) return parseBigDouble((String) obj);
+
+        throw new IllegalArgumentException("Cannot parse " + obj.getClass() + " as a BigDouble");
+    }
+
+
     private static BigDouble normalize(double mantissa, long exponent) {
         if (mantissa >= 1 && mantissa < 10 || !Double.isFinite(mantissa)) {
             return fromMantissaExponentNoNormalize(mantissa, exponent);
@@ -2344,7 +2354,5 @@ public final class BigDouble extends Number implements Comparable<BigDouble> {
     }
 
     private static class PrivateConstructorArg { }
-
-    public static void main(String[] args) {}
-
+    
 }
